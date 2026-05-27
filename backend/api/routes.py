@@ -271,31 +271,57 @@ async def get_teams(
 @router.get("/dashboard")
 async def get_dashboard(
     year: int = Query(2026),
+    category: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_session),
 ):
     """Return summary stats for the dashboard hero."""
+    # Total events (same across categories)
     ev_res = await db.execute(
         select(func.count(Event.id)).where(Event.season_year == year)
     )
     total_gp = ev_res.scalar() or 0
 
-    rd_res = await db.execute(
-        select(RiderStanding).where(
-            RiderStanding.season_year == year,
-            RiderStanding.position <= 3,
-        ).order_by(RiderStanding.position)
-    )
-    top3 = rd_res.scalars().all()
+    # Sessions count (filtered by category)
+    s_q = select(func.count(MotoSession.id))
+    if category:
+        s_q = s_q.where(MotoSession.category_id == category)
+    s_res = await db.execute(s_q)
+    total_sessions = s_res.scalar() or 0
 
-    sr_res = await db.execute(
-        select(func.count(Result.id))
+    # Results count (filtered by category via session join)
+    r_q = select(func.count(Result.id))
+    if category:
+        r_q = r_q.join(MotoSession, Result.session_id == MotoSession.id).where(
+            MotoSession.category_id == category
+        )
+    r_res = await db.execute(r_q)
+    total_results = r_res.scalar() or 0
+
+    # Rider count (distinct riders in standings, filtered by category)
+    rid_q = select(func.count(func.distinct(RiderStanding.rider_id))).where(
+        RiderStanding.season_year == year
     )
-    total_results = sr_res.scalar() or 0
+    if category:
+        rid_q = rid_q.where(RiderStanding.category_id == category)
+    rid_res = await db.execute(rid_q)
+    total_riders = rid_res.scalar() or 0
+
+    # Top 3 (filtered by category, limit by position)
+    t3_q = select(RiderStanding).where(
+        RiderStanding.season_year == year,
+    )
+    if category:
+        t3_q = t3_q.where(RiderStanding.category_id == category)
+    t3_q = t3_q.order_by(RiderStanding.position).limit(3)
+    t3_res = await db.execute(t3_q)
+    top3 = t3_res.scalars().all()
 
     return {
         "year": year,
         "total_events": total_gp,
+        "total_sessions": total_sessions,
         "total_results": total_results,
+        "total_riders": total_riders,
         "top_3": [
             {
                 "position": r.position,

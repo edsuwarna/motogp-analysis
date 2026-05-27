@@ -198,6 +198,7 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
   @media (max-width: 768px) {
+    .hide-mobile { display: none !important; }
     .nav-link { padding: 6px 10px; font-size: 11px; letter-spacing: 0; }
     .stat-value { font-size: 20px; }
     .stat-label { font-size: 10px; }
@@ -382,6 +383,7 @@
 <script>
 const API = 'https://motogp-api.edsuwarna.id';
 let state = { categories: [], events: [], standings: [], pointsChart: null };
+let currentCategory = '';
 
 // ── Theme ──
 function toggleTheme() {
@@ -425,40 +427,48 @@ async function api(path) {
 // ── Init ──
 async function init() {
   try {
-    const [cats, events, dash] = await Promise.all([
+    const [cats, events] = await Promise.all([
       api('/categories?year=2026'),
       api('/events?year=2026'),
-      api('/dashboard?year=2026'),
     ]);
     state.categories = cats;
     state.events = events;
     
-    // Category filter
+    // Find MotoGP category and set as default
+    const motogp = cats.find(c => c.name === 'MotoGP');
+    currentCategory = motogp ? motogp.id : '';
+    
+    // Populate category filters — default to MotoGP
     const catOpts = '<option value="">All Categories</option>' +
       cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     document.getElementById('cat-filter').innerHTML = catOpts;
     document.getElementById('standing-cat').innerHTML = catOpts;
     
-    // Stats
-    const totalSessions = events.reduce((s, e) => s + (e.session_count || 0), 0);
-    document.getElementById('stat-events').textContent = events.length;
-    document.getElementById('stat-sessions').textContent = totalSessions;
-    document.getElementById('stat-results').textContent = dash.total_results || '-';
-    document.getElementById('stat-riders').textContent = dash.top_3 ? '85+' : '-';
+    // Set default to MotoGP
+    if (currentCategory) {
+      document.getElementById('cat-filter').value = currentCategory;
+      document.getElementById('standing-cat').value = currentCategory;
+    }
     
-    await loadPodium();
-    await loadRecentResults();
-    await loadPointsChart();
+    await loadAll();
   } catch (err) {
     console.error('Init error:', err);
   }
 }
 
-// ── Podium ──
+// ── Podium + Hero Stats ──
 async function loadPodium() {
   try {
-    const dash = await api('/dashboard?year=2026');
+    const cat = document.getElementById('cat-filter').value;
+    const dash = await api(`/dashboard?year=2026${cat ? `&category=${cat}` : ''}`);
     const podium = document.getElementById('podium');
+    
+    // Update hero stats
+    document.getElementById('stat-events').textContent = dash.total_events || '-';
+    document.getElementById('stat-sessions').textContent = dash.total_sessions || '-';
+    document.getElementById('stat-results').textContent = dash.total_results || '-';
+    document.getElementById('stat-riders').textContent = dash.total_riders || '-';
+    
     if (!dash.top_3 || dash.top_3.length === 0) {
       podium.innerHTML = '<div class="card p-6 text-center" style="color:var(--text-secondary)">No standings data yet</div>';
       return;
@@ -477,7 +487,8 @@ async function loadPodium() {
 // ── Points Chart ──
 async function loadPointsChart() {
   try {
-    const standings = await api('/standings/riders?year=2026');
+    const cat = document.getElementById('cat-filter').value;
+    const standings = await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!standings || standings.length === 0) return;
     
     // Top 10 for chart
@@ -587,15 +598,15 @@ async function loadStandings() {
     
     let html = '<table>';
     if (type === 'riders') {
-      html += `<tr><th>Pos</th><th>Rider</th><th>Number</th><th>Team</th><th>Constructor</th><th style="text-align:right;">Points</th></tr>`;
+      html += `<tr><th>Pos</th><th>Rider</th><th style="text-align:right;">Pts</th><th class="hide-mobile">#</th><th class="hide-mobile">Team</th><th class="hide-mobile">Constructor</th></tr>`;
       data.forEach(r => {
         html += `<tr>
           <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
           <td><strong>${r.rider_name}</strong></td>
-          <td style="color:var(--text-muted)">#${r.rider_number || '-'}</td>
-          <td style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
-          <td><span class="badge badge-soft">${r.constructor_name || '-'}</span></td>
-          <td style="text-align:right;font-weight:700;font-size:15px;">${r.points}</td>
+          <td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td>
+          <td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td>
+          <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
+          <td class="hide-mobile"><span class="badge badge-soft">${r.constructor_name || '-'}</span></td>
         </tr>`;
       });
     } else {
@@ -666,15 +677,15 @@ async function loadRaces() {
         if (!div) continue;
         const results = await api(`/sessions/${sess.id}/results`);
         if (results.length === 0) { div.innerHTML = '<p class="text-sm" style="color:var(--text-muted)">No results</p>'; continue; }
-        let tbl = '<table><tr><th>Pos</th><th>Rider</th><th>Nat</th><th>Team</th><th>Time/Gap</th><th>Best Lap</th></tr>';
+        let tbl = '<table><tr><th>Pos</th><th>Rider</th><th class="hide-mobile">Nat</th><th class="hide-mobile">Team</th><th>Time/Gap</th><th class="hide-mobile">Best Lap</th></tr>';
         results.forEach(r => {
           tbl += `<tr>
             <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position || '-')}</td>
             <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
-            <td class="flag">${r.rider_country || '-'}</td>
-            <td style="color:var(--text-secondary);font-size:12px;">${r.team_name || r.constructor_name || '-'}</td>
+            <td class="flag hide-mobile">${r.rider_country || '-'}</td>
+            <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || r.constructor_name || '-'}</td>
             <td style="font-family:monospace;font-size:12px;">${r.total_time || r.gap_first || r.gap_prev || '-'}</td>
-            <td style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>
+            <td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>
           </tr>`;
         });
         tbl += '</table>';
