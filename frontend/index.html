@@ -513,18 +513,19 @@ async function loadPointsChart() {
         }]
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
         },
         scales: {
-          y: {
+          x: {
             beginAtZero: true,
             grid: { color: 'rgba(255,255,255,.05)' },
             ticks: { color: '#999' }
           },
-          x: {
+          y: {
             grid: { display: false },
             ticks: { color: '#999' }
           }
@@ -553,16 +554,16 @@ async function loadRecentResults() {
     let html = '';
     for (const ev of events) {
       const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
-      const raceSessions = sessions.filter(s => s.type === 'R' || s.type === 'SPR');
+      const raceSessions = sessions.filter(s => s.type === 'RAC' || s.type === 'SPR');
       if (raceSessions.length === 0) continue;
       
       html += `<div class="p-4" style="border-bottom:1px solid var(--border-color);">
         <div class="font-bold text-sm mb-2">${ev.name} <span style="color:var(--text-secondary);font-weight:400;">R${ev.round}</span></div>`;
       
-      for (const sess of raceSessions.slice(0, 2)) {
+      for (const sess of raceSessions) {
         const results = await api(`/sessions/${sess.id}/results`);
         if (results.length === 0) continue;
-        html += `<div class="text-xs mb-1" style="color:var(--text-secondary);">${sess.type === 'R' ? '🏁 Race' : '⚡ Sprint'}</div>`;
+        html += `<div class="text-xs mb-1" style="color:var(--text-secondary);">${sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint'}</div>`;
         html += `<table><tr><th>Pos</th><th>Rider</th><th>Team</th><th>Time/Gap</th></tr>`;
         results.slice(0, 5).forEach(r => {
           html += `<tr>
@@ -637,7 +638,7 @@ async function loadRaces() {
     
     for (const ev of events) {
       const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
-      const raceSess = sessions.filter(s => s.type === 'R' || s.type === 'SPR');
+      const raceSess = sessions.filter(s => s.type === 'RAC' || s.type === 'SPR');
       const hasData = raceSess.length > 0;
       
       html += `<div class="card mb-3 overflow-hidden">
@@ -656,7 +657,7 @@ async function loadRaces() {
         </div>
         ${hasData ? `<div class="p-3" style="background:var(--bg-primary);">
           ${raceSess.map(sess => {
-            const sessLabel = sess.type === 'R' ? '🏁 Race' : '⚡ Sprint';
+            const sessLabel = sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint';
             return `<details class="mb-2">
               <summary class="cursor-pointer text-sm font-bold px-2 py-1 rounded" style="color:var(--accent);">${sessLabel} <span style="color:var(--text-secondary);font-weight:400;">— tap to expand</span></summary>
               <div class="mt-2 results-${sess.id}"></div>

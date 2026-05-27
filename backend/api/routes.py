@@ -202,13 +202,14 @@ async def get_rider_standings(
     q = select(RiderStanding).where(RiderStanding.season_year == year)
     if category:
         q = q.where(RiderStanding.category_id == category)
-    q = q.order_by(RiderStanding.position)
+    # Order by points DESC so we can renumber per-category positions
+    q = q.order_by(RiderStanding.points.desc())
 
     res = await db.execute(q)
     standings = []
-    for s in res.scalars():
+    for i, s in enumerate(res.scalars(), start=1):
         standings.append({
-            "position": s.position,
+            "position": i,
             "rider_id": s.rider_id,
             "rider_name": s.rider_name,
             "rider_number": s.rider_number,
@@ -229,13 +230,13 @@ async def get_constructor_standings(
     q = select(ConstructorStanding).where(ConstructorStanding.season_year == year)
     if category:
         q = q.where(ConstructorStanding.category_id == category)
-    q = q.order_by(ConstructorStanding.position)
+    q = q.order_by(ConstructorStanding.points.desc())
 
     res = await db.execute(q)
     standings = []
-    for s in res.scalars():
+    for i, s in enumerate(res.scalars(), start=1):
         standings.append({
-            "position": s.position,
+            "position": i,
             "constructor_name": s.constructor_name,
             "points": s.points,
         })
@@ -306,13 +307,13 @@ async def get_dashboard(
     rid_res = await db.execute(rid_q)
     total_riders = rid_res.scalar() or 0
 
-    # Top 3 (filtered by category, limit by position)
+    # Top 3 (filtered by category, sorted by points DESC)
     t3_q = select(RiderStanding).where(
         RiderStanding.season_year == year,
     )
     if category:
         t3_q = t3_q.where(RiderStanding.category_id == category)
-    t3_q = t3_q.order_by(RiderStanding.position).limit(3)
+    t3_q = t3_q.order_by(RiderStanding.points.desc()).limit(3)
     t3_res = await db.execute(t3_q)
     top3 = t3_res.scalars().all()
 
@@ -324,11 +325,11 @@ async def get_dashboard(
         "total_riders": total_riders,
         "top_3": [
             {
-                "position": r.position,
+                "position": i + 1,
                 "rider_name": r.rider_name,
                 "points": r.points,
                 "constructor_name": r.constructor_name,
             }
-            for r in top3
+            for i, r in enumerate(top3)
         ],
     }
