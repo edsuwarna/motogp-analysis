@@ -241,7 +241,7 @@ async def _build_standings(db, year: int):
     for ms, rnd in scoring_sessions:
         r_res = await db.execute(
             select(Result).where(Result.session_id == ms.id)
-            .order_by(Result.position)
+            .order_by(Result.position.nulls_last())
         )
         results = r_res.scalars().all()
         points_map = SPRINT_POINTS if ms.type == "SPR" else RACE_POINTS

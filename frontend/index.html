@@ -665,16 +665,26 @@ async function loadRaces() {
           ${analytics && analytics.weather ? `<span class="session-nav" onclick="switchSessView(this, 'weather-${sess.id}'); event.stopPropagation();">🌤️ Weather</span>` : ''}
           <a href="${API}/api/sessions/${sess.id}/export/csv" download class="session-nav" style="margin-left:auto;color:var(--accent);text-decoration:none;" onclick="event.stopPropagation();">📥 CSV</a>
         </div>`;
-        // Results table
-        let tbl = '<div id="table-' + sess.id + '"><table><tr><th>Pos</th><th>Rider</th><th class="hide-mobile">Nat</th><th class="hide-mobile">Team</th><th>Time/Gap</th><th class="hide-mobile">Best Lap</th><th class="hide-mobile">Top Speed</th></tr>';
+        // Results table — hide empty columns dynamically
+        const hasBestLap = results.some(r => r.best_lap_time);
+        const hasTopSpeed = results.some(r => r.top_speed);
+        const hasTeam = results.some(r => r.team_name);
+        const hasCountry = results.some(r => r.rider_country);
+        let tbl = '<div id="table-' + sess.id + '"><table><tr><th>Pos</th><th>Rider</th>' +
+          (hasCountry ? '<th class="hide-mobile">Nat</th>' : '') +
+          (hasTeam ? '<th class="hide-mobile">Team</th>' : '') +
+          '<th>Time/Gap</th>' +
+          (hasBestLap ? '<th class="hide-mobile">Best Lap</th>' : '') +
+          (hasTopSpeed ? '<th class="hide-mobile">Top Speed</th>' : '') +
+          '</tr>';
         results.forEach(r => {
           tbl += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position || '-')}</td>
             <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
-            <td class="hide-mobile">${r.rider_country || '-'}</td>
-            <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
+            ${hasCountry ? `<td class="hide-mobile">${r.rider_country || '-'}</td>` : ''}
+            ${hasTeam ? `<td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>` : ''}
             <td style="font-family:monospace;font-size:12px;">${r.total_time || r.gap_first || r.gap_prev || '-'}</td>
-            <td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>
-            <td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.top_speed ? r.top_speed + ' km/h' : '-'}</td>
+            ${hasBestLap ? `<td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>` : ''}
+            ${hasTopSpeed ? `<td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.top_speed ? r.top_speed + ' km/h' : '-'}</td>` : ''}
           </tr>`;
         });
         tbl += '</table></div>';
@@ -742,29 +752,39 @@ async function loadTeams() {
     container.innerHTML = '<div class="col-span-3 text-center py-8" style="color:var(--text-secondary);">Loading...</div>';
     const teams = await api(`/teams/detail?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!teams || teams.length === 0) { container.innerHTML = '<div class="col-span-3 text-center py-8" style="color:var(--text-secondary);">No teams data</div>'; return; }
-    // Dedup by constructor_name
-    const seen = new Set();
-    const uniqueTeams = [];
+    // Group by constructor_name
+    const grouped = {};
     teams.forEach(t => {
-      const key = t.constructor_name;
-      if (!seen.has(key)) { seen.add(key); uniqueTeams.push(t); }
+      const key = t.constructor_name || 'Unknown';
+      if (!grouped[key]) grouped[key] = { constructor: key, color: t.color || '#666', constructor_points: t.constructor_points || 0, teams: [] };
+      grouped[key].teams.push(t);
     });
-    // Sort by constructor points
-    uniqueTeams.sort((a, b) => b.constructor_points - a.constructor_points);
-    container.innerHTML = uniqueTeams.map(t => `
-      <div class="card p-4 card-hover">
-        <div class="flex items-center gap-2 mb-3">
-          <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${t.color || '#666'};"></span>
-          <h3 class="font-bold">${t.constructor_name}</h3>
+    // Sort constructors by points descending, then teams by name
+    const sortedConstructors = Object.values(grouped).sort((a, b) => b.constructor_points - a.constructor_points);
+    sortedConstructors.forEach(g => g.teams.sort((a, b) => (a.team_name || '').localeCompare(b.team_name || '')));
+    container.innerHTML = sortedConstructors.map(g => `
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${g.color};"></span>
+            <h3 class="font-bold text-lg">${g.constructor}</h3>
+          </div>
+          <span class="text-sm font-bold" style="color:var(--accent);">${g.constructor_points} pts</span>
         </div>
-        <div class="text-xs mb-2" style="color:var(--text-secondary);">${t.team_name} ${t.rider_count > 0 ? `&middot; ${t.rider_count} rider(s)` : ''}</div>
-        <div class="text-sm font-bold" style="color:var(--accent);">${t.constructor_points} pts</div>
-        ${t.riders && t.riders.length > 0 ? `<div class="mt-3 pt-3" style="border-top:1px solid var(--border-color);">
-          ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${t.riders.length > 1 ? 'rider-row' : ''}" ${t.riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"` : ''}>
-            <span><strong>${r.rider_name}</strong> #${r.rider_number || '-'}</span>
-            <span style="color:var(--accent);font-weight:700;">${r.points} pts</span>
-          </div>`).join('')}
-        </div>` : ''}
+        ${g.teams.map((t, ti) => `
+          <div class="${ti > 0 ? 'mt-3 pt-3' : ''}" style="${ti > 0 ? 'border-top:1px solid var(--border-color);' : ''}">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold" style="font-size:14px;">${t.team_name}</div>
+              ${t.rider_count > 0 ? `<span class="text-xs" style="color:var(--text-secondary);">${t.rider_count} rider(s)</span>` : ''}
+            </div>
+            ${t.riders && t.riders.length > 0 ? `<div class="mt-2">
+              ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${g.teams[0].riders && g.teams[0].riders.length > 1 ? 'rider-row' : ''}" ${g.teams[0].riders && g.teams[0].riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"` : ''}>
+                <span><strong>${r.rider_name}</strong> #${r.rider_number || '-'}</span>
+                <span style="color:var(--accent);font-weight:700;">${r.points} pts</span>
+              </div>`).join('')}
+            </div>` : '<div class="text-xs mt-1" style="color:var(--text-muted);">No rider data</div>'}
+          </div>
+        `).join('')}
       </div>
     `).join('');
   } catch (err) { console.error(err); }
@@ -892,7 +912,7 @@ let progressionChartInstance = null;
 async function loadProgression() {
   try {
     const cat = document.getElementById('prog-cat').value;
-    const data = await api(`/season/progression?year=2026${cat ? `&category=${cat}` : ''}&top_n=15`);
+    const data = await api(`/season/progression?year=2026${cat ? `&category=${cat}` : ''}&top_n=25`);
     if (!data.riders || data.riders.length === 0) { document.getElementById('progressionChart').parentElement.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No progression data</div>'; return; }
 
     // Build rider toggle checkboxes
@@ -1001,7 +1021,10 @@ async function loadTeammateBattle() {
       return `<div class="card p-4 mb-4 battle-card" style="border-left-color:${b.color};">
         <div class="flex items-center gap-2 mb-3">
           <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${b.color};"></span>
-          <h3 class="font-bold">${b.constructor_name}</h3>
+          <h3 class="font-bold">${b.team_name || b.constructor_name}</h3>
+          <span class="text-xs" style="color:var(--text-secondary);">${b.constructor_name}</span>
+        </div>
+        ${b.riders.map(r => `
         </div>
         ${b.riders.map(r => `
           <div class="flex items-center justify-between text-sm py-1 border-b" style="border-color:var(--border-color);">
@@ -1182,7 +1205,7 @@ async function loadSeasonStatsTable() {
     if (!container) return;
     container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-muted);">Loading...</div>';
     // Use rider stats endpoint (no category filter yet — backend handles it)
-    const data = await api(`/riders/stats?year=2026`);
+    const data = await api(`/riders/stats?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!data.riders || data.riders.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary);">No stats data</div>'; return; }
     let html = '<table><tr><th>Rider</th><th style="text-align:right;">Pts</th><th style="text-align:right;">Races</th><th style="text-align:right;">Avg Pos</th><th style="text-align:right;">🏆</th><th style="text-align:right;">🥇</th><th style="text-align:right;">Top5</th><th style="text-align:right;">💥 DNF</th></tr>';
     data.riders.forEach(r => {

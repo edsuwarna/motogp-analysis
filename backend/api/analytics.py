@@ -339,7 +339,7 @@ async def get_teams_detail(
 ):
     """Get teams with riders and constructor standings info."""
     # Get team names from session drivers
-    team_query = text("""
+    team_query = text(f"""
         SELECT DISTINCT
             r.team_id,
             r.team_name,
@@ -348,9 +348,13 @@ async def get_teams_detail(
         JOIN sessions s ON s.id = r.session_id
         JOIN events e ON e.id = s.event_id
         WHERE e.season_year = :year
+          { 'AND s.category_id = :cat' if category else '' }
         ORDER BY r.team_name
     """)
-    team_res = await db.execute(team_query, {"year": year})
+    team_params = {"year": year}
+    if category:
+        team_params["cat"] = category
+    team_res = await db.execute(team_query, team_params)
     teams_raw = team_res.fetchall()
 
     # Get constructor standings
@@ -390,7 +394,7 @@ async def get_teams_detail(
     teams_list = []
     seen = set()
     for t in teams_raw:
-        key = f"{t.team_id}_{t.constructor_name}"
+        key = f"{t.team_name}_{t.constructor_name}"
         if key in seen:
             continue
         seen.add(key)
@@ -432,9 +436,10 @@ async def get_season_stats(
         FROM sessions s
         JOIN events e ON e.id = s.event_id
         WHERE e.season_year = :year AND s.type IN ('RAC', 'SPR')
+          AND (:cat IS NULL OR s.category_id = :cat)
         ORDER BY e.round, s.date
     """)
-    sess_res = await db.execute(sess_q, {"year": year})
+    sess_res = await db.execute(sess_q, {"year": year, "cat": category})
     sessions = sess_res.fetchall()
 
     # Get all sessions (including FP, Q) for best lap / top speed data
@@ -443,9 +448,10 @@ async def get_season_stats(
         FROM sessions s
         JOIN events e ON e.id = s.event_id
         WHERE e.season_year = :year
+          AND (:cat IS NULL OR s.category_id = :cat)
         ORDER BY e.round, s.date
     """)
-    all_sess_res = await db.execute(all_sess_q, {"year": year})
+    all_sess_res = await db.execute(all_sess_q, {"year": year, "cat": category})
     all_sessions = all_sess_res.fetchall()
 
     from collections import defaultdict, Counter
@@ -460,7 +466,7 @@ async def get_season_stats(
         # Get results
         res = await db.execute(
             select(Result).where(Result.session_id == s.id)
-            .order_by(Result.position)
+            .order_by(Result.position.nulls_last())
         )
         results = res.scalars().all()
         if not results:
@@ -468,7 +474,7 @@ async def get_season_stats(
 
         # Pole (P1 in qualifying — approximate via RAC/SPR P1)
         # Winner
-        if results:
+        if results and results[0].position == 1:
             winner = results[0]
             wins[winner.rider_id] += 1
             rider_info[winner.rider_id] = {
@@ -656,7 +662,7 @@ async def get_teammate_battle(
     category: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_session),
 ):
-    """Head-to-head comparison between teammates (same constructor)."""
+    """Head-to-head comparison between teammates (same team)."""
     from collections import defaultdict, Counter
 
     # Get all riders in standings
@@ -668,10 +674,10 @@ async def get_teammate_battle(
     if not riders:
         return {"year": year, "battles": [], "total": 0}
 
-    # Group by constructor
-    by_constructor = defaultdict(list)
+    # Group by team (actual teammates)
+    by_team = defaultdict(list)
     for r in riders:
-        by_constructor[r.constructor_name or r.team_name].append(r)
+        by_team[r.team_name or r.constructor_name].append(r)
 
     # Get all RAC/SPR session IDs for the year in one query
     sess_res = await db.execute(
@@ -708,9 +714,9 @@ async def get_teammate_battle(
     # Also index rider standings by rider_id
     standing_map = {r.rider_id: r for r in riders}
 
-    # For each constructor with 2+ riders, compute head-to-head
+    # For each team with 2+ riders, compute head-to-head
     battles = []
-    for constr, rider_list in sorted(by_constructor.items()):
+    for team, rider_list in sorted(by_team.items()):
         if len(rider_list) < 2:
             continue
 
@@ -770,8 +776,11 @@ async def get_teammate_battle(
                     })
 
         if h2h_list:
+            # Get constructor for color from first rider
+            constr = rider_list[0].constructor_name or ""
             color = CONSTRUCTOR_COLORS.get(constr, "#666")
             battles.append({
+                "team_name": team,
                 "constructor_name": constr,
                 "color": color,
                 "riders": [rider_stats[rid] for rid in rider_ids],
@@ -952,7 +961,7 @@ async def export_session_csv(
     """Export session results as CSV."""
     res = await db.execute(
         select(Result).where(Result.session_id == session_id)
-        .order_by(Result.position)
+        .order_by(Result.position.nulls_last())
     )
     results = res.scalars().all()
 
@@ -1153,11 +1162,18 @@ async def get_speed_traps(
 @router.get("/riders/stats")
 async def get_rider_season_stats(
     year: int = Query(2026),
+    category: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_session),
 ):
     """Aggregate season stats for all riders: avg position, podiums, DNFs, etc."""
+    # Build query with optional category filter
+    cat_join = ""
+    cat_param = {}
+    if category:
+        cat_join = "JOIN categories c ON c.id = s.category_id"
+        cat_param["cat"] = category
     res = await db.execute(
-        text("""
+        text(f"""
             SELECT r.rider_id, r.rider_name, r.rider_number, r.rider_country,
                    r.team_name, r.constructor_name,
                    r.position, r.top_speed, r.status, r.total_laps,
@@ -1165,10 +1181,12 @@ async def get_rider_season_stats(
             FROM results r
             JOIN sessions s ON s.id = r.session_id
             JOIN events e ON e.id = s.event_id
+            {cat_join}
             WHERE e.season_year = :year
               AND s.type IN ('RAC', 'SPR')
+              { 'AND c.id = :cat' if category else '' }
         """),
-        {"year": year},
+        {"year": year, **cat_param},
     )
     rows = res.fetchall()
     if not rows:
