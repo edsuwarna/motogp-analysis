@@ -198,12 +198,60 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
   @media (max-width: 768px) {
-    .nav-link { padding: 8px 12px; font-size: 12px; }
-    .stat-value { font-size: 22px; }
+    .nav-link { padding: 6px 10px; font-size: 11px; letter-spacing: 0; }
+    .stat-value { font-size: 20px; }
+    .stat-label { font-size: 10px; }
+    #nav-tabs { gap: 2px; }
+    #nav-tabs .theme-btn { padding: 6px 8px; font-size: 14px; }
+    .card.p-4 { padding: 12px; }
+    .card.p-5 { padding: 14px; }
+    .card.p-6 { padding: 14px; }
+    th { padding: 8px 8px; font-size: 10px; letter-spacing: .5px; }
+    td { padding: 7px 8px; font-size: 12px; }
+    .podium-card .text-3xl { font-size: 24px; }
+    .podium-card .text-lg { font-size: 14px; }
+    .podium-card .text-2xl { font-size: 18px; }
+    .hero-gradient { padding-top: 20px; padding-bottom: 20px; }
+    .hero-gradient h1 { font-size: 20px; }
+    .hero-gradient .text-3xl { font-size: 24px; }
+    #hero-stats { gap: 8px; }
+    #hero-stats .card { padding: 10px; }
+    #hero-stats .card .stat-value { font-size: 18px; }
+    #hero-stats .card .stat-label { font-size: 9px; }
+    #standings-table table { min-width: 500px; }
+    #standings-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #recent-results table { min-width: 400px; }
+    #race-list .card .flex.items-center { flex-wrap: wrap; gap: 8px; }
+    #race-list details table { min-width: 480px; font-size: 11px; }
+    #race-list details { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #race-list .badge { font-size: 10px; padding: 2px 8px; }
+    .news-card .w-16.h-16 { width: 48px; height: 48px; }
+    .news-card .text-sm { font-size: 12px; }
+    .news-card .text-xs { font-size: 10px; }
+    footer { padding: 16px !important; font-size: 10px !important; }
+    [id^="tab-"] { padding-bottom: 60px; }
+  }
+
+  @media (max-width: 480px) {
+    .stat-value { font-size: 16px; }
+    #hero-stats.grid-cols-2 { gap: 6px; }
+    #hero-stats .card { padding: 8px; }
+    #hero-stats .card .stat-value { font-size: 16px; }
+    #hero-stats .card .stat-label { font-size: 8px; }
+    .nav-link { padding: 4px 8px; font-size: 10px; }
+    #nav-tabs { gap: 0; }
+    #nav-tabs .theme-btn { padding: 4px 6px; font-size: 12px; }
+    .hero-gradient h1 { font-size: 17px; }
+    .hero-gradient .text-3xl { font-size: 20px; }
+    select.text-sm { font-size: 12px; padding: 6px 10px; max-width: 160px; }
+    th { padding: 6px 6px; font-size: 9px; }
+    td { padding: 5px 6px; font-size: 11px; }
+    .news-card .flex.items-start { flex-direction: column; }
+    .news-card .w-16.h-16 { width: 100%; height: auto; max-height: 120px; border-radius: 8px; }
   }
 </style>
 </head>
-<body class="dark">
+<body>
 <div id="app" class="min-h-screen">
 
 <!-- NAV -->
@@ -341,12 +389,17 @@ function toggleTheme() {
   const btn = document.getElementById('theme-btn');
   if (html.classList.contains('dark')) {
     html.classList.remove('dark');
+    html.classList.add('light');
     btn.textContent = '☀️';
   } else {
+    html.classList.remove('light');
     html.classList.add('dark');
     btn.textContent = '🌙';
   }
 }
+
+// Init dark theme
+document.documentElement.classList.add('dark');
 
 // ── Navigation ──
 document.getElementById('nav-tabs').addEventListener('click', e => {
