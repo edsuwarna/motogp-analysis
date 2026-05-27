@@ -10,245 +10,100 @@
 </script>
 <style>
   :root {
-    --bg-primary: #0d0d0d;
-    --bg-card: #1a1a1a;
-    --bg-card-hover: #222;
-    --border-color: #2a2a2a;
-    --text-primary: #e8e8e8;
-    --text-secondary: #999;
-    --text-muted: #666;
-    --table-border: #1f1f1f;
-    --hover-bg: rgba(227, 6, 19, .05);
-    --input-bg: #1a1a1a;
-    --badge-soft: #222;
-    --badge-soft-text: #ccc;
-    --accent: #e30613;
-    --accent-hover: #c00510;
-    --accent-glow: rgba(227, 6, 19, .3);
-    --gold: #d4a800;
-    --silver: #a8a8a8;
-    --bronze: #cd7f32;
-    --sector1: #e30613;
-    --sector2: #ff6b35;
-    --sector3: #00a86b;
+    --bg-primary: #0d0d0d; --bg-card: #1a1a1a; --bg-card-hover: #222;
+    --border-color: #2a2a2a; --text-primary: #e8e8e8; --text-secondary: #999;
+    --text-muted: #666; --table-border: #1f1f1f; --hover-bg: rgba(227,6,19,.05);
+    --input-bg: #1a1a1a; --badge-soft: #222; --badge-soft-text: #ccc;
+    --accent: #e30613; --accent-hover: #c00510; --accent-glow: rgba(227,6,19,.3);
+    --gold: #d4a800; --silver: #a8a8a8; --bronze: #cd7f32;
   }
   .light {
-    --bg-primary: #f4f2f0;
-    --bg-card: #ffffff;
-    --bg-card-hover: #f9f7f5;
-    --border-color: #ddd;
-    --text-primary: #1a1a1a;
-    --text-secondary: #666;
-    --text-muted: #999;
-    --table-border: #eee;
-    --hover-bg: rgba(227, 6, 19, .04);
-    --input-bg: #fff;
-    --badge-soft: #eee;
-    --badge-soft-text: #555;
-    --accent: #cc0000;
-    --accent-hover: #aa0000;
+    --bg-primary: #f4f2f0; --bg-card: #ffffff; --bg-card-hover: #f9f7f5;
+    --border-color: #ddd; --text-primary: #1a1a1a; --text-secondary: #666;
+    --text-muted: #999; --table-border: #eee; --hover-bg: rgba(227,6,19,.04);
+    --input-bg: #fff; --badge-soft: #eee; --badge-soft-text: #555;
+    --accent: #cc0000; --accent-hover: #aa0000;
   }
-  body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    transition: background .3s, color .3s;
-  }
+  body { background: var(--bg-primary); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background .3s, color .3s; }
   .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; transition: all .2s; }
-  .card:hover { border-color: var(--accent); }
-  .moto-red { color: var(--accent); }
-  .bg-moto-red { background: var(--accent); }
-  .border-moto-red { border-color: var(--accent); }
-  
-  .nav-link {
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 10px 20px;
-    border-radius: 8px;
-    transition: all .2s;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: .3px;
-  }
+  .card-hover:hover { border-color: var(--accent); }
+  .moto-red { color: var(--accent); } .bg-moto-red { background: var(--accent); } .border-moto-red { border-color: var(--accent); }
+  .nav-link { color: var(--text-secondary); cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: all .2s; font-weight: 600; font-size: 14px; letter-spacing: .3px; }
   .nav-link:hover { color: var(--text-primary); background: var(--hover-bg); }
   .nav-link.active { color: #fff; background: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
   .light .nav-link.active { color: #fff; }
-  
   table { width: 100%; border-collapse: collapse; }
-  th {
-    text-align: left;
-    padding: 12px 14px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    color: var(--text-secondary);
-    border-bottom: 2px solid var(--accent);
-    font-weight: 700;
-  }
-  td { padding: 10px 14px; border-bottom: 1px solid var(--table-border); font-size: 13px; transition: background .15s; }
+  th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--text-secondary); border-bottom: 2px solid var(--accent); font-weight: 700; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--table-border); font-size: 13px; transition: background .15s; cursor: default; }
   tr:hover td { background: var(--hover-bg); }
-  
-  .pos-1 { color: var(--gold); font-weight: 800; }
-  .pos-2 { color: var(--silver); font-weight: 700; }
-  .pos-3 { color: var(--bronze); font-weight: 700; }
-  
-  select, input {
-    background: var(--input-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    transition: all .2s;
-  }
-  select:focus, input:focus {
-    border-color: var(--accent);
-    outline: none;
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  
-  .theme-btn {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 16px;
-    color: var(--text-primary);
-    transition: all .2s;
-  }
+  .pos-1 { color: var(--gold); font-weight: 800; } .pos-2 { color: var(--silver); font-weight: 700; } .pos-3 { color: var(--bronze); font-weight: 700; }
+  select, input { background: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 14px; font-size: 13px; transition: all .2s; }
+  select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-glow); }
+  .theme-btn { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 16px; color: var(--text-primary); transition: all .2s; }
   .theme-btn:hover { border-color: var(--accent); }
-  
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .3px;
-  }
-  .badge-motogp { background: var(--accent); color: #fff; }
-  .badge-moto2 { background: #1a5276; color: #fff; }
-  .badge-moto3 { background: #1a6e3a; color: #fff; }
-  
-  .hero-gradient {
-    background: linear-gradient(135deg, #0d0d0d 0%, #1a0a0a 50%, #0d0d0d 100%);
-    border-bottom: 3px solid var(--accent);
-  }
-  .light .hero-gradient {
-    background: linear-gradient(135deg, #f4f2f0 0%, #fce8e8 50%, #f4f2f0 100%);
-  }
-  
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+  .badge-motogp { background: var(--accent); color: #fff; } .badge-moto2 { background: #1a5276; color: #fff; } .badge-moto3 { background: #1a6e3a; color: #fff; }
+  .badge-soft { background: var(--badge-soft); color: var(--badge-soft-text); }
+  .hero-gradient { background: linear-gradient(135deg, #0d0d0d 0%, #1a0a0a 50%, #0d0d0d 100%); border-bottom: 3px solid var(--accent); }
+  .light .hero-gradient { background: linear-gradient(135deg, #f4f2f0 0%, #fce8e8 50%, #f4f2f0 100%); }
   .loading { opacity: .5; pointer-events: none; position: relative; }
-  .loading::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(227,6,19,.05), transparent);
-    animation: shimmer 1.5s infinite;
-  }
+  .loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(227,6,19,.05), transparent); animation: shimmer 1.5s infinite; }
   @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-  
-  .podium-card {
-    position: relative;
-    overflow: hidden;
-  }
-  .podium-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-  }
-  .podium-1::before { background: var(--gold); }
-  .podium-2::before { background: var(--silver); }
-  .podium-3::before { background: var(--bronze); }
-  
+  .podium-card { position: relative; overflow: hidden; }
+  .podium-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .podium-1::before { background: var(--gold); } .podium-2::before { background: var(--silver); } .podium-3::before { background: var(--bronze); }
   .tab-content { display: none; }
   .tab-content.active { display: block; animation: fadeIn .3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  
   .flag { font-size: 20px; }
-  
-  .news-card {
-    transition: all .2s;
-  }
-  .news-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,.3);
-  }
-  .light .news-card:hover {
-    box-shadow: 0 8px 25px rgba(0,0,0,.1);
-  }
-  
-  .accent-line {
-    width: 40px;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-  
+  .news-card { transition: all .2s; }
+  .news-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
+  .light .news-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,.1); }
+  .accent-line { width: 40px; height: 3px; background: var(--accent); border-radius: 2px; }
   .stat-value { font-size: 28px; font-weight: 800; color: var(--accent); }
   .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; }
-  
+  .sub-tab { cursor: pointer; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); transition: all .2s; }
+  .sub-tab:hover { color: var(--text-primary); background: var(--hover-bg); }
+  .sub-tab.active { color: var(--accent); background: rgba(227,6,19,.1); }
+  .session-nav { cursor: pointer; font-size: 13px; }
+  .session-nav:hover { color: var(--accent); }
+  .session-nav.active { color: var(--accent); font-weight: 700; border-bottom: 2px solid var(--accent); }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .stat-card { text-align: center; padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color); }
+  .stat-card .val { font-size: 22px; font-weight: 800; color: var(--accent); }
+  .stat-card .lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: var(--bg-primary); }
   ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
+  .rider-row { cursor: pointer; }
+  .rider-row:hover { background: var(--hover-bg); }
+  .compare-stat { text-align: center; padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color); }
+  .compare-stat .val { font-size: 24px; font-weight: 800; }
+  .compare-stat .lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+  .compare-stat .winner { color: var(--accent); }
+  .compare-stat .loser { color: var(--text-muted); }
+  .battle-card { border-left: 4px solid; }
+  .battle-bar { height: 24px; border-radius: 12px; transition: width .5s ease; }
+  .back-btn { cursor: pointer; padding: 6px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); border: 1px solid var(--accent); transition: all .2s; display: inline-block; background: transparent; }
+  .back-btn:hover { background: var(--accent); color: #fff; }
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
-    .nav-link { padding: 6px 10px; font-size: 11px; letter-spacing: 0; }
+    .nav-link { padding: 6px 10px; font-size: 11px; }
     .stat-value { font-size: 20px; }
-    .stat-label { font-size: 10px; }
     #nav-tabs { gap: 2px; }
-    #nav-tabs .theme-btn { padding: 6px 8px; font-size: 14px; }
     .card.p-4 { padding: 12px; }
-    .card.p-5 { padding: 14px; }
-    .card.p-6 { padding: 14px; }
-    th { padding: 8px 8px; font-size: 10px; letter-spacing: .5px; }
+    th { padding: 8px 8px; font-size: 10px; }
     td { padding: 7px 8px; font-size: 12px; }
-    .podium-card .text-3xl { font-size: 24px; }
-    .podium-card .text-lg { font-size: 14px; }
-    .podium-card .text-2xl { font-size: 18px; }
-    .hero-gradient { padding-top: 20px; padding-bottom: 20px; }
-    .hero-gradient h1 { font-size: 20px; }
-    .hero-gradient .text-3xl { font-size: 24px; }
-    #hero-stats { gap: 8px; }
-    #hero-stats .card { padding: 10px; }
-    #hero-stats .card .stat-value { font-size: 18px; }
-    #hero-stats .card .stat-label { font-size: 9px; }
-    #standings-table table { min-width: 500px; }
-    #standings-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    #recent-results table { min-width: 400px; }
-    #race-list .card .flex.items-center { flex-wrap: wrap; gap: 8px; }
-    #race-list details table { min-width: 480px; font-size: 11px; }
-    #race-list details { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    #race-list .badge { font-size: 10px; padding: 2px 8px; }
-    .news-card .w-16.h-16 { width: 48px; height: 48px; }
-    .news-card .text-sm { font-size: 12px; }
-    .news-card .text-xs { font-size: 10px; }
-    footer { padding: 16px !important; font-size: 10px !important; }
-    [id^="tab-"] { padding-bottom: 60px; }
+    .detail-grid { grid-template-columns: repeat(2, 1fr); }
   }
-
   @media (max-width: 480px) {
     .stat-value { font-size: 16px; }
-    #hero-stats.grid-cols-2 { gap: 6px; }
-    #hero-stats .card { padding: 8px; }
-    #hero-stats .card .stat-value { font-size: 16px; }
-    #hero-stats .card .stat-label { font-size: 8px; }
     .nav-link { padding: 4px 8px; font-size: 10px; }
-    #nav-tabs { gap: 0; }
-    #nav-tabs .theme-btn { padding: 4px 6px; font-size: 12px; }
-    .hero-gradient h1 { font-size: 17px; }
-    .hero-gradient .text-3xl { font-size: 20px; }
-    select.text-sm { font-size: 12px; padding: 6px 10px; max-width: 160px; }
-    th { padding: 6px 6px; font-size: 9px; }
-    td { padding: 5px 6px; font-size: 11px; }
-    .news-card .flex.items-start { flex-direction: column; }
-    .news-card .w-16.h-16 { width: 100%; height: auto; max-height: 120px; border-radius: 8px; }
+    .sub-tab { padding: 4px 10px; font-size: 10px; }
+    .detail-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-card { padding: 10px; }
+    .stat-card .val { font-size: 18px; }
   }
 </style>
 </head>
@@ -262,7 +117,7 @@
       <div class="flex items-center gap-3">
         <span class="text-2xl">🏍️</span>
         <span class="text-lg font-extrabold tracking-tight">
-          <span class="moto-red">Moto</span>GP 
+          <span class="moto-red">Moto</span>GP
           <span style="color:var(--text-secondary);font-size:13px;font-weight:400;">Analysis 2026</span>
         </span>
       </div>
@@ -270,7 +125,11 @@
         <span class="nav-link active" data-tab="dashboard">📊 Dashboard</span>
         <span class="nav-link" data-tab="standings">🏆 Standings</span>
         <span class="nav-link" data-tab="races">🏁 Races</span>
+        <span class="nav-link" data-tab="progression">📈 Progression</span>
+        <span class="nav-link" data-tab="teams">🏢 Teams</span>
+        <span class="nav-link" data-tab="stats">📈 Season Stats</span>
         <span class="nav-link" data-tab="news">📰 News</span>
+        <span class="nav-link" data-tab="about">ℹ️ About</span>
         <button class="theme-btn ml-2" onclick="toggleTheme()" id="theme-btn">🌙</button>
       </div>
     </div>
@@ -278,52 +137,56 @@
 </nav>
 
 <!-- HERO -->
-<header class="hero-gradient py-8 md:py-12">
+<header class="hero-gradient py-6 md:py-10">
   <div class="max-w-7xl mx-auto px-4">
-    <div class="flex flex-wrap items-center justify-between gap-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
       <div>
-        <div class="flex items-center gap-3 mb-2">
+        <div class="flex items-center gap-3 mb-1">
           <span class="text-3xl">🏍️</span>
           <h1 class="text-2xl md:text-4xl font-black tracking-tight">
             2026 <span class="moto-red">MotoGP</span>
           </h1>
         </div>
-        <p class="text-sm" style="color:var(--text-secondary);">World Championship — Live Standings & Race Results</p>
+        <p class="text-sm" style="color:var(--text-secondary);">World Championship — Live Standings, Race Results & Analysis</p>
       </div>
       <div class="flex items-center gap-3">
-        <select id="cat-filter" onchange="loadAll()" class="text-sm">
+        <select id="cat-filter" onchange="onCategoryChange()" class="text-sm">
           <option value="">All Categories</option>
         </select>
       </div>
     </div>
-    <!-- Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8" id="hero-stats">
-      <div class="card p-4 text-center"><div class="stat-value" id="stat-events">-</div><div class="stat-label">Events</div></div>
-      <div class="card p-4 text-center"><div class="stat-value" id="stat-sessions">-</div><div class="stat-label">Sessions</div></div>
-      <div class="card p-4 text-center"><div class="stat-value" id="stat-results">-</div><div class="stat-label">Results</div></div>
-      <div class="card p-4 text-center"><div class="stat-value" id="stat-riders">-</div><div class="stat-label">Riders</div></div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6" id="hero-stats">
+      <div class="card p-3 text-center"><div class="stat-value" id="stat-events">-</div><div class="stat-label">Events</div></div>
+      <div class="card p-3 text-center"><div class="stat-value" id="stat-sessions">-</div><div class="stat-label">Sessions</div></div>
+      <div class="card p-3 text-center"><div class="stat-value" id="stat-results">-</div><div class="stat-label">Results</div></div>
+      <div class="card p-3 text-center"><div class="stat-value" id="stat-riders">-</div><div class="stat-label">Riders</div></div>
+      <div class="card p-3 text-center"><div class="stat-value" id="stat-teams">-</div><div class="stat-label">Teams</div></div>
     </div>
   </div>
 </header>
 
 <main class="max-w-7xl mx-auto px-4 py-6">
 
-<!-- DASHBOARD -->
+<!-- ────────── DASHBOARD ────────── -->
 <div class="tab-content active" id="tab-dashboard">
   <div class="mb-6">
     <h2 class="text-xl font-bold">🏆 Championship Top 3</h2>
     <div class="accent-line mt-2"></div>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="podium"></div>
-  
+
   <div class="mb-6 mt-10">
-    <h2 class="text-xl font-bold">📊 Season Progression</h2>
+    <h2 class="text-xl font-bold">📊 Championship Standings</h2>
     <div class="accent-line mt-2"></div>
   </div>
-  <div class="card p-4 md:p-6">
-    <canvas id="pointsChart" height="300"></canvas>
+  <div class="flex gap-3 mb-4">
+    <span class="sub-tab active" onclick="switchStandingsChart(this, 'riders')">🏍️ Riders</span>
+    <span class="sub-tab" onclick="switchStandingsChart(this, 'constructors')">🏭 Constructors</span>
   </div>
-  
+  <div class="card p-4 md:p-6">
+    <canvas id="standingsChart" height="350"></canvas>
+  </div>
+
   <div class="mb-6 mt-10">
     <h2 class="text-xl font-bold">🏁 Recent Results</h2>
     <div class="accent-line mt-2"></div>
@@ -331,14 +194,14 @@
   <div class="card overflow-x-auto" id="recent-results"></div>
 </div>
 
-<!-- STANDINGS -->
+<!-- ────────── STANDINGS ────────── -->
 <div class="tab-content" id="tab-standings">
   <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div>
-      <h2 class="text-xl font-bold">🏆 Rider Standings</h2>
+      <h2 class="text-xl font-bold">🏆 Championship Standings</h2>
       <div class="accent-line mt-2"></div>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 flex-wrap">
       <select id="standing-cat" onchange="loadStandings()" class="text-sm">
         <option value="">All Categories</option>
       </select>
@@ -349,9 +212,17 @@
     </div>
   </div>
   <div class="card overflow-x-auto" id="standings-table"></div>
+  
+  <!-- Championship race-by-race breakdown -->
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">📋 Race-by-Race Breakdown</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Points earned per race (Race + Sprint combined per weekend)</p>
+  </div>
+  <div class="card overflow-x-auto" id="breakdown-table"></div>
 </div>
 
-<!-- RACES -->
+<!-- ────────── RACES ────────── -->
 <div class="tab-content" id="tab-races">
   <div class="mb-6">
     <h2 class="text-xl font-bold">🏁 2026 Race Calendar</h2>
@@ -360,7 +231,113 @@
   <div id="race-list"></div>
 </div>
 
-<!-- NEWS -->
+<!-- ────────── PROGRESSION ────────── -->
+<div class="tab-content" id="tab-progression">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold">📈 Season Progression</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Cumulative points per rider across every round</p>
+  </div>
+  <div class="flex gap-3 mb-4 flex-wrap">
+    <select id="prog-cat" onchange="loadProgression()" class="text-sm"><option value="">All Categories</option></select>
+  </div>
+  <div id="progression-controls" class="flex flex-wrap gap-2 mb-4"></div>
+  <div class="card p-4 md:p-6 mb-6">
+    <canvas id="progressionChart" height="400"></canvas>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6" id="progression-top-stats"></div>
+
+  <!-- Teammate Battle sub-section -->
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">🤜 Teammate Battle</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Head-to-head comparison between riders in the same constructor</p>
+  </div>
+  <div class="flex gap-3 mb-4 flex-wrap">
+    <select id="battle-cat" onchange="loadTeammateBattle()" class="text-sm"><option value="">All Categories</option></select>
+  </div>
+  <div id="teammate-battle-container"></div>
+</div>
+
+<!-- ────────── TEAMS ────────── -->
+<div class="tab-content" id="tab-teams">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold">🏢 Teams & Constructors</h2>
+    <div class="accent-line mt-2"></div>
+  </div>
+  <div class="flex gap-3 mb-4">
+    <select id="team-cat" onchange="loadTeams()" class="text-sm">
+      <option value="">All Categories</option>
+    </select>
+  </div>
+  <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+</div>
+
+<!-- ────────── SEASON STATS ────────── -->
+<div class="tab-content" id="tab-stats">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold">📈 Season Statistics</h2>
+    <div class="accent-line mt-2"></div>
+  </div>
+  <div class="flex gap-3 mb-4 flex-wrap">
+    <select id="stats-cat" onchange="loadSeasonStats()" class="text-sm"><option value="">All Categories</option></select>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="stats-grid">
+    <div class="card p-4"><h3 class="font-bold text-sm mb-3">🏆 Most Wins</h3><div id="stats-wins" class="text-sm" style="color:var(--text-secondary);">Loading...</div></div>
+    <div class="card p-4"><h3 class="font-bold text-sm mb-3">🥇 Most Podiums</h3><div id="stats-podiums" class="text-sm" style="color:var(--text-secondary);">Loading...</div></div>
+    <div class="card p-4"><h3 class="font-bold text-sm mb-3">⚡ Fastest Laps</h3><div id="stats-fl" class="text-sm" style="color:var(--text-secondary);">Loading...</div></div>
+    <div class="card p-4"><h3 class="font-bold text-sm mb-3">🚀 Top Speed Kings</h3><div id="stats-speed" class="text-sm" style="color:var(--text-secondary);">Loading...</div></div>
+  </div>
+  
+  <!-- Rider Progress -->
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">📈 Rider Season Progress</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Click a rider to see their race-by-race performance</p>
+  </div>
+  <div class="flex gap-3 mb-4 flex-wrap">
+    <select id="rider-select" onchange="loadRiderProgress()" class="text-sm">
+      <option value="">Select a rider...</option>
+    </select>
+  </div>
+  <div id="rider-progress" style="color:var(--text-secondary);font-size:13px;">Select a rider to view their progress</div>
+
+  <!-- Rider Comparison -->
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">🤜🤛 Rider Comparison</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Compare two riders side-by-side across the season</p>
+  </div>
+  <div class="flex flex-wrap gap-3 items-center mb-4">
+    <select id="comp-rider-a" onchange="maybeLoadCompare()" class="text-sm"><option value="">Select Rider A...</option></select>
+    <span style="color:var(--text-secondary);font-size:13px;">vs</span>
+    <select id="comp-rider-b" onchange="maybeLoadCompare()" class="text-sm"><option value="">Select Rider B...</option></select>
+    <button onclick="loadComparison()" class="px-4 py-2 rounded-lg text-sm font-bold text-white" style="background:var(--accent);">Compare 🔍</button>
+  </div>
+  <div id="comparison-result"></div>
+  
+  <!-- Rider Form -->
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">📊 Rider Recent Form</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Last 5 race/sprint results with trend analysis</p>
+  </div>
+  <div class="flex flex-wrap gap-3 items-center mb-4">
+    <select id="form-rider" onchange="loadRiderForm()" class="text-sm"><option value="">Select a rider...</option></select>
+    <span id="form-trend-badge"></span>
+  </div>
+  <div id="rider-form-result" style="color:var(--text-secondary);font-size:13px;">Select a rider to view their recent form</div>
+
+  <!-- Rider Season Stats -->
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">📋 Rider Season Stats</h2>
+    <div class="accent-line mt-2"></div>
+    <p class="text-xs mt-2" style="color:var(--text-secondary);">Aggregate stats across all race & sprint sessions</p>
+  </div>
+  <div class="card overflow-x-auto" id="season-stats-table"></div>
+</div>
+
+<!-- ────────── NEWS ────────── -->
 <div class="tab-content" id="tab-news">
   <div class="flex items-center justify-between gap-4 mb-6">
     <div>
@@ -370,6 +347,39 @@
     <button class="px-4 py-2 rounded-lg text-sm font-bold text-white" style="background:var(--accent);" onclick="loadNews(true)">🔄 Refresh</button>
   </div>
   <div id="news-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+</div>
+
+<!-- ────────── ABOUT ────────── -->
+<div class="tab-content" id="tab-about">
+  <div class="card p-6 max-w-3xl">
+    <h2 class="text-xl font-bold mb-4">ℹ️ About MotoGP Analysis 2026</h2>
+    <div class="accent-line mb-4"></div>
+    
+    <h3 class="font-bold text-sm mt-6 mb-2">📊 Dashboard</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Championship Top 3 podium, bar chart of points standings (riders/constructors), and recent race results.</p>
+    
+    <h3 class="font-bold text-sm mt-4 mb-2">🏆 Standings</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Full rider and constructor standings tables with category filtering, plus race-by-race points breakdown for the top 10 riders.</p>
+    
+    <h3 class="font-bold text-sm mt-4 mb-2">🏁 Races</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Complete 2026 race calendar with Sprint & Race results. Each session shows rider positions, gaps, best lap times, top speeds, and weather conditions. Circuit info displayed per event. CSV export available per session.</p>
+
+    <h3 class="font-bold text-sm mt-4 mb-2">📈 Progression</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Season progression multi-line chart showing cumulative points per rider across all rounds. Toggle riders on/off with checkboxes. Includes teammate battle head-to-head comparisons within each constructor.</p>
+
+    <h3 class="font-bold text-sm mt-4 mb-2">🏢 Teams</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Teams and constructors with rider lineups, points, and constructor colors.</p>
+
+    <h3 class="font-bold text-sm mt-4 mb-2">📈 Season Stats</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Season statistics: most wins, podiums, fastest laps, and top speed rankings. Rider season progress chart with cumulative points and position tracking. Rider comparison tool — select two riders for a head-to-head stats showdown. <strong>Rider Recent Form</strong> shows last 5 race results with trend analysis (improving/declining/stable). <strong>Rider Season Stats</strong> table aggregates wins, podiums, top5s, DNFs across the full season.</p>
+
+    <h3 class="font-bold text-sm mt-6 mb-2">🔗 Data Source</h3>
+    <p class="text-sm" style="color:var(--text-secondary);">Data powered by the official MotoGP pulselive API. Not affiliated with MotoGP or Dorna Sports.</p>
+    
+    <div class="mt-8 p-4" style="background:var(--bg-primary);border-radius:8px;border:1px solid var(--border-color);">
+      <p class="text-xs" style="color:var(--text-muted);">Built with FastAPI, SQLite, Chart.js & TailwindCSS 🏍️</p>
+    </div>
+  </div>
 </div>
 
 </main>
@@ -382,31 +392,20 @@
 
 <script>
 const API = 'https://motogp-api.edsuwarna.id';
-let state = { categories: [], events: [], standings: [], pointsChart: null };
+let state = { categories: [], events: [], standingsChart: null, curChart: 'riders' };
 let currentCategory = '';
 
 // ── Theme ──
 function toggleTheme() {
-  const html = document.documentElement;
-  const btn = document.getElementById('theme-btn');
-  if (html.classList.contains('dark')) {
-    html.classList.remove('dark');
-    html.classList.add('light');
-    btn.textContent = '☀️';
-  } else {
-    html.classList.remove('light');
-    html.classList.add('dark');
-    btn.textContent = '🌙';
-  }
+  const html = document.documentElement; const btn = document.getElementById('theme-btn');
+  if (html.classList.contains('dark')) { html.classList.remove('dark'); html.classList.add('light'); btn.textContent = '☀️'; }
+  else { html.classList.remove('light'); html.classList.add('dark'); btn.textContent = '🌙'; }
 }
-
-// Init dark theme
 document.documentElement.classList.add('dark');
 
-// ── Navigation ──
+// ── Nav ──
 document.getElementById('nav-tabs').addEventListener('click', e => {
-  const link = e.target.closest('.nav-link');
-  if (!link) return;
+  const link = e.target.closest('.nav-link'); if (!link) return;
   const tab = link.dataset.tab;
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   link.classList.add('active');
@@ -414,121 +413,102 @@ document.getElementById('nav-tabs').addEventListener('click', e => {
   document.getElementById(`tab-${tab}`).classList.add('active');
   if (tab === 'standings') loadStandings();
   if (tab === 'races') loadRaces();
+  if (tab === 'progression') { loadProgression(); loadTeammateBattle(); }
+  if (tab === 'teams') loadTeams();
+  if (tab === 'stats') { loadSeasonStats(); loadRiderList(); fillCompareLists(); loadRiderFormList(); loadSeasonStatsTable(); }
   if (tab === 'news') loadNews();
 });
 
 // ── API ──
-async function api(path) {
-  const res = await fetch(`${API}/api${path}`);
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
-  return res.json();
-}
+async function api(path) { const res = await fetch(`${API}/api${path}`); if (!res.ok) throw new Error(`API ${res.status}: ${path}`); return res.json(); }
 
 // ── Init ──
 async function init() {
   try {
-    const [cats, events] = await Promise.all([
-      api('/categories?year=2026'),
-      api('/events?year=2026'),
-    ]);
-    state.categories = cats;
-    state.events = events;
-    
-    // Find MotoGP category and set as default
+    const [cats, events] = await Promise.all([api('/categories?year=2026'), api('/events?year=2026')]);
+    state.categories = cats; state.events = events;
     const motogp = cats.find(c => c.name === 'MotoGP');
     currentCategory = motogp ? motogp.id : '';
-    
-    // Populate category filters — default to MotoGP
-    const catOpts = '<option value="">All Categories</option>' +
-      cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    document.getElementById('cat-filter').innerHTML = catOpts;
-    document.getElementById('standing-cat').innerHTML = catOpts;
-    
-    // Set default to MotoGP
-    if (currentCategory) {
-      document.getElementById('cat-filter').value = currentCategory;
-      document.getElementById('standing-cat').value = currentCategory;
-    }
-    
+    const catOpts = '<option value="">All Categories</option>' + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    document.querySelectorAll('#cat-filter, #standing-cat, #team-cat, #stats-cat, #prog-cat, #battle-cat').forEach(el => { el.innerHTML = catOpts; });
+    if (currentCategory) { document.querySelectorAll('#cat-filter, #standing-cat, #team-cat, #stats-cat, #prog-cat, #battle-cat').forEach(el => el.value = currentCategory); }
     await loadAll();
-  } catch (err) {
-    console.error('Init error:', err);
-  }
+  } catch (err) { console.error('Init error:', err); }
 }
 
-// ── Podium + Hero Stats ──
+function onCategoryChange() {
+  currentCategory = document.getElementById('cat-filter').value;
+  const active = document.querySelector('.tab-content.active');
+  if (active) { const id = active.id.replace('tab-', ''); if (id === 'dashboard') loadAll(); }
+}
+
+// ── Podium + Stats ──
 async function loadPodium() {
   try {
     const cat = document.getElementById('cat-filter').value;
     const dash = await api(`/dashboard?year=2026${cat ? `&category=${cat}` : ''}`);
-    const podium = document.getElementById('podium');
-    
-    // Update hero stats
     document.getElementById('stat-events').textContent = dash.total_events || '-';
     document.getElementById('stat-sessions').textContent = dash.total_sessions || '-';
     document.getElementById('stat-results').textContent = dash.total_results || '-';
     document.getElementById('stat-riders').textContent = dash.total_riders || '-';
-    
-    if (!dash.top_3 || dash.top_3.length === 0) {
-      podium.innerHTML = '<div class="card p-6 text-center" style="color:var(--text-secondary)">No standings data yet</div>';
-      return;
-    }
+
+    // Teams count from teams detail
+    try { const teams = await api(`/teams/detail?year=2026${cat ? `&category=${cat}` : ''}`); document.getElementById('stat-teams').textContent = teams.length || '-'; } catch(e) { document.getElementById('stat-teams').textContent = '-'; }
+
+    const podium = document.getElementById('podium');
+    if (!dash.top_3 || dash.top_3.length === 0) { podium.innerHTML = '<div class="card p-6 text-center" style="color:var(--text-secondary)">No standings data yet</div>'; return; }
     podium.innerHTML = dash.top_3.map((r, i) => `
-      <div class="card podium-card podium-${i+1} p-5 text-center">
+      <div class="card podium-card podium-${i+1} p-5 text-center card-hover">
         <div class="text-3xl mb-2">${['🥇','🥈','🥉'][i]}</div>
         <div class="text-lg font-bold">${r.rider_name}</div>
-        <div class="text-sm" style="color:var(--text-secondary)">${r.constructor_name}</div>
+        <div class="text-sm" style="color:var(--text-secondary);">${r.constructor_name}</div>
         <div class="text-2xl font-black moto-red mt-2">${r.points} <span style="font-size:12px;color:var(--text-secondary);">pts</span></div>
       </div>
     `).join('');
   } catch (err) { console.error(err); }
 }
 
-// ── Points Chart ──
-async function loadPointsChart() {
+// ── Standings Chart (Riders / Constructors) ──
+function switchStandingsChart(el, type) {
+  state.curChart = type;
+  document.querySelectorAll('#tab-dashboard .sub-tab').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  loadStandingsChart();
+}
+
+async function loadStandingsChart() {
   try {
     const cat = document.getElementById('cat-filter').value;
-    const standings = await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`);
-    if (!standings || standings.length === 0) return;
-    
-    // Top 10 for chart
-    const top = standings.slice(0, 10);
-    const labels = top.map(r => r.rider_name.split(' ').pop());
+    const type = state.curChart;
+    const data = type === 'riders'
+      ? await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`)
+      : await api(`/standings/constructors?year=2026${cat ? `&category=${cat}` : ''}`);
+    if (!data || data.length === 0) return;
+
+    const top = data.slice(0, 12);
+    const labels = type === 'riders' ? top.map(r => r.rider_name.split(' ').pop()) : top.map(r => r.constructor_name);
     const points = top.map(r => r.points);
-    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8'];
-    
-    if (state.pointsChart) state.pointsChart.destroy();
-    
-    const ctx = document.getElementById('pointsChart').getContext('2d');
-    state.pointsChart = new Chart(ctx, {
+    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72'];
+
+    if (state.standingsChart) state.standingsChart.destroy();
+    const ctx = document.getElementById('standingsChart').getContext('2d');
+    state.standingsChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels,
         datasets: [{
-          label: 'Points',
+          label: type === 'riders' ? 'Points' : 'Constructor Points',
           data: points,
           backgroundColor: colors.slice(0, top.length),
-          borderRadius: 4,
-          borderSkipped: false,
+          borderRadius: 4, borderSkipped: false,
         }]
       },
       options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-        },
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.raw} pts` } } },
         scales: {
-          x: {
-            beginAtZero: true,
-            grid: { color: 'rgba(255,255,255,.05)' },
-            ticks: { color: '#999' }
-          },
-          y: {
-            grid: { display: false },
-            ticks: { color: '#999' }
-          }
+          x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999' } },
+          y: { grid: { display: false }, ticks: { color: '#999', font: { size: 11 } } }
         }
       }
     });
@@ -539,91 +519,88 @@ async function loadPointsChart() {
 async function loadRecentResults() {
   try {
     const container = document.getElementById('recent-results');
-    // Sort by date descending to get latest first
     const cat = document.getElementById('cat-filter').value;
-    const events = state.events
-      .filter(e => e.session_count > 0)
-      .sort((a, b) => (b.date_start || '').localeCompare(a.date_start || ''))
-      .slice(0, 2);
-    
-    if (events.length === 0) {
-      container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No race data yet</div>';
-      return;
-    }
-    
+    const events = state.events.filter(e => e.session_count > 0).sort((a, b) => (b.date_start || '').localeCompare(a.date_start || '')).slice(0, 3);
+    if (events.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No race data yet</div>'; return; }
     let html = '';
     for (const ev of events) {
       const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
       const raceSessions = sessions.filter(s => s.type === 'RAC' || s.type === 'SPR');
       if (raceSessions.length === 0) continue;
-      
-      html += `<div class="p-4" style="border-bottom:1px solid var(--border-color);">
-        <div class="font-bold text-sm mb-2">${ev.name} <span style="color:var(--text-secondary);font-weight:400;">R${ev.round}</span></div>`;
-      
+      html += `<div class="p-4" style="border-bottom:1px solid var(--border-color);"><div class="font-bold text-sm mb-2">${ev.short_name || ev.name} <span style="color:var(--text-secondary);font-weight:400;">R${ev.round}</span> <span class="text-xs" style="color:var(--text-muted);">${ev.circuit_name || ''}</span></div>`;
       for (const sess of raceSessions) {
         const results = await api(`/sessions/${sess.id}/results`);
         if (results.length === 0) continue;
         html += `<div class="text-xs mb-1" style="color:var(--text-secondary);">${sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint'}</div>`;
-        html += `<table><tr><th>Pos</th><th>Rider</th><th>Team</th><th>Time/Gap</th></tr>`;
+        html += '<table><tr><th>Pos</th><th>Rider</th><th class="hide-mobile">Team</th><th>Time</th><th class="hide-mobile">Best Lap</th></tr>';
         results.slice(0, 5).forEach(r => {
-          html += `<tr>
-            <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : `#${r.position}`}</td>
+          html += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : `#${r.position}`}</td>
             <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
-            <td style="color:var(--text-secondary);font-size:12px;">${r.team_name || r.constructor_name || '-'}</td>
-            <td style="font-family:monospace;">${r.total_time || r.gap_first || '-'}</td>
+            <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
+            <td style="font-family:monospace;font-size:12px;">${r.total_time || r.gap_first || '-'}</td>
+            <td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>
           </tr>`;
         });
-        html += `</table>`;
+        html += '</table>';
       }
-      html += `</div>`;
+      html += '</div>';
     }
     container.innerHTML = html || '<div class="p-6 text-center" style="color:var(--text-secondary)">No recent results</div>';
   } catch (err) { console.error(err); }
 }
 
-// ── Standings ──
+// ── Standings Table ──
 async function loadStandings() {
   try {
     const cat = document.getElementById('standing-cat').value;
     const type = document.getElementById('standing-class').value;
     const container = document.getElementById('standings-table');
     container.classList.add('loading');
-    
     const data = await api(`/standings/${type}?year=2026${cat ? `&category=${cat}` : ''}`);
-    
-    if (!data || data.length === 0) {
-      container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No standings data</div>';
-      container.classList.remove('loading');
-      return;
-    }
-    
+    if (!data || data.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No standings data</div>'; container.classList.remove('loading'); return; }
     let html = '<table>';
     if (type === 'riders') {
       html += `<tr><th>Pos</th><th>Rider</th><th style="text-align:right;">Pts</th><th class="hide-mobile">#</th><th class="hide-mobile">Team</th><th class="hide-mobile">Constructor</th></tr>`;
-      data.forEach(r => {
-        html += `<tr>
-          <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
-          <td><strong>${r.rider_name}</strong></td>
-          <td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td>
-          <td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td>
-          <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
-          <td class="hide-mobile"><span class="badge badge-soft">${r.constructor_name || '-'}</span></td>
-        </tr>`;
-      });
+      data.forEach(r => { html += `<tr class="rider-row" onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td><td><strong>${r.rider_name}</strong></td><td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td><td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td><td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td><td class="hide-mobile"><span class="badge badge-soft">${r.constructor_name || '-'}</span></td></tr>`; });
     } else {
       html += `<tr><th>Pos</th><th>Constructor</th><th style="text-align:right;">Points</th></tr>`;
-      data.forEach(r => {
-        html += `<tr>
-          <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
-          <td><strong>${r.constructor_name}</strong></td>
-          <td style="text-align:right;font-weight:700;">${r.points}</td>
-        </tr>`;
-      });
+      data.forEach(r => { html += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td><td><strong>${r.constructor_name}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent);">${r.points}</td></tr>`; });
     }
     html += '</table>';
-    container.innerHTML = html;
-    container.classList.remove('loading');
+    container.innerHTML = html; container.classList.remove('loading');
+    // Also load breakdown
+    loadBreakdown();
   } catch (err) { console.error(err); container.classList.remove('loading'); }
+}
+
+// ── Race-by-Race Breakdown ──
+async function loadBreakdown() {
+  try {
+    const cat = document.getElementById('standing-cat').value;
+    const container = document.getElementById('breakdown-table');
+    const data = await api(`/championship/breakdown?year=2026${cat ? `&category=${cat}` : ''}&top_n=10`);
+    if (!data.riders || data.riders.length === 0 || !data.races || data.races.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No breakdown data</div>'; return; }
+    // Build header: Rider | R1 | R2 | ... | Total
+    let html = '<div class="overflow-x-auto"><table><tr><th style="position:sticky;left:0;background:var(--bg-card);z-index:1;">Rider</th>';
+    data.races.forEach(r => { html += `<th style="text-align:center;min-width:40px;">R${r.round}</th>`; });
+    html += '<th style="text-align:right;">Total</th></tr>';
+    data.riders.forEach(rider => {
+      html += `<tr><td style="position:sticky;left:0;background:var(--bg-card);z-index:1;"><strong>${rider.rider_name}</strong></td>`;
+      data.races.forEach(r => {
+        const res = rider.results[r.round] || {};
+        const pts = res.points || 0;
+        const pos = res.position;
+        let cell = `<td style="text-align:center;font-size:11px;">`;
+        if (pts > 0) cell += `<span class="${pos <= 3 ? `pos-${pos}` : ''}" ${pos <= 3 ? 'style="font-weight:700;"' : ''}>${pts}</span>`;
+        else cell += `<span style="color:var(--text-muted);">-</span>`;
+        cell += '</td>';
+        html += cell;
+      });
+      html += `<td style="text-align:right;font-weight:700;color:var(--accent);">${rider.total_points}</td></tr>`;
+    });
+    html += '</table></div>';
+    container.innerHTML = html;
+  } catch (err) { console.error(err); }
 }
 
 // ── Races ──
@@ -632,84 +609,608 @@ async function loadRaces() {
     const cat = document.getElementById('cat-filter').value;
     const container = document.getElementById('race-list');
     container.innerHTML = '<div class="text-center py-8" style="color:var(--text-secondary)">Loading...</div>';
-    
     const events = state.events;
     let html = '';
-    
     for (const ev of events) {
       const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
       const raceSess = sessions.filter(s => s.type === 'RAC' || s.type === 'SPR');
       const hasData = raceSess.length > 0;
-      
-      html += `<div class="card mb-3 overflow-hidden">
+      html += `<div class="card mb-3 overflow-hidden card-hover">
         <div class="p-4 flex items-center justify-between" style="border-bottom:${hasData ? '1px solid var(--border-color)' : 'none'};">
           <div class="flex items-center gap-3">
             <span class="text-lg font-bold moto-red">R${ev.round}</span>
             <div>
-              <div class="font-bold">${ev.name}</div>
+              <div class="font-bold">${ev.short_name || ev.name}</div>
               <div class="text-xs" style="color:var(--text-secondary);">
-                ${ev.circuit_name || ev.country || ''}${ev.date_start ? ` &middot; ${ev.date_start}` : ''}
+                ${ev.circuit_name || ev.country || ''} ${ev.date_start ? `&middot; ${new Date(ev.date_start).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}` : ''}
                 ${ev.session_count ? ` &middot; ${ev.session_count} sessions` : ''}
               </div>
             </div>
           </div>
-          <span class="badge ${hasData ? 'badge-motogp' : 'badge-soft'}">${hasData ? '✅ Results' : '📅 Upcoming'}</span>
+          <span class="badge ${hasData ? 'badge-motogp' : 'badge-soft'}">${hasData ? '✅' : '📅'}</span>
         </div>
-        ${hasData ? `<div class="p-3" style="background:var(--bg-primary);">
-          ${raceSess.map(sess => {
-            const sessLabel = sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint';
-            return `<details class="mb-2">
-              <summary class="cursor-pointer text-sm font-bold px-2 py-1 rounded" style="color:var(--accent);">${sessLabel} <span style="color:var(--text-secondary);font-weight:400;">— tap to expand</span></summary>
-              <div class="mt-2 results-${sess.id}"></div>
-            </details>`;
-          }).join('')}
+        ${hasData ? `<div class="p-3" style="background:var(--bg-primary);">${raceSess.map(sess => {
+          const sessLabel = sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint';
+          return `<details class="mb-2">
+            <summary class="cursor-pointer text-sm font-bold px-2 py-1 rounded" style="color:var(--accent);">${sessLabel} <span style="color:var(--text-secondary);font-weight:400;">— tap to expand</span></summary>
+            <div class="mt-2 results-${sess.id}"><div class="text-xs py-4 text-center" style="color:var(--text-muted);">Loading...</div></div>
+          </details>`;
+        }).join('')}</div>` : ''}
+        ${ev.circuit_name ? `<div class="px-4 py-2 text-xs flex flex-wrap gap-4" style="background:var(--bg-primary);border-top:1px solid var(--border-color);color:var(--text-secondary);">
+          <span>📍 ${ev.circuit_name}${ev.country ? `, ${ev.country}` : ''}</span>
+          <span>📅 ${ev.date_start ? new Date(ev.date_start).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '-'}</span>
+          <span>🏍️ ${ev.session_count || '-'} sessions</span>
         </div>` : ''}
       </div>`;
     }
-    
     container.innerHTML = html;
-    
-    // Load results for each race session
+    // Load results for each session
     for (const ev of events) {
       const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
-      const raceSess = sessions.filter(s => s.type === 'R' || s.type === 'SPR');
+      const raceSess = sessions.filter(s => s.type === 'RAC' || s.type === 'SPR');
       for (const sess of raceSess) {
         const div = document.querySelector(`.results-${sess.id}`);
         if (!div) continue;
-        const results = await api(`/sessions/${sess.id}/results`);
+        div.innerHTML = '<div class="text-xs py-4 text-center" style="color:var(--text-muted);">Loading...</div>';
+        const [results, analytics] = await Promise.all([
+          api(`/sessions/${sess.id}/results`),
+          api(`/sessions/${sess.id}/analytics`).catch(() => null)
+        ]);
         if (results.length === 0) { div.innerHTML = '<p class="text-sm" style="color:var(--text-muted)">No results</p>'; continue; }
-        let tbl = '<table><tr><th>Pos</th><th>Rider</th><th class="hide-mobile">Nat</th><th class="hide-mobile">Team</th><th>Time/Gap</th><th class="hide-mobile">Best Lap</th></tr>';
+        // Build tabbed results view
+        let tabs = `<div class="flex gap-2 mb-3 flex-wrap">
+          <span class="session-nav active" onclick="switchSessView(this, 'table-${sess.id}'); event.stopPropagation();">📋 Results</span>
+          <span class="session-nav" onclick="switchSessView(this, 'bestlaps-${sess.id}'); event.stopPropagation();">⚡ Best Laps</span>
+          <span class="session-nav" onclick="switchSessView(this, 'topspeed-${sess.id}'); event.stopPropagation();">🚀 Top Speed</span>
+          ${analytics && analytics.weather ? `<span class="session-nav" onclick="switchSessView(this, 'weather-${sess.id}'); event.stopPropagation();">🌤️ Weather</span>` : ''}
+          <a href="${API}/api/sessions/${sess.id}/export/csv" download class="session-nav" style="margin-left:auto;color:var(--accent);text-decoration:none;" onclick="event.stopPropagation();">📥 CSV</a>
+        </div>`;
+        // Results table
+        let tbl = '<div id="table-' + sess.id + '"><table><tr><th>Pos</th><th>Rider</th><th class="hide-mobile">Nat</th><th class="hide-mobile">Team</th><th>Time/Gap</th><th class="hide-mobile">Best Lap</th><th class="hide-mobile">Top Speed</th></tr>';
         results.forEach(r => {
-          tbl += `<tr>
-            <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position || '-')}</td>
+          tbl += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position || '-')}</td>
             <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
-            <td class="flag hide-mobile">${r.rider_country || '-'}</td>
-            <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || r.constructor_name || '-'}</td>
+            <td class="hide-mobile">${r.rider_country || '-'}</td>
+            <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
             <td style="font-family:monospace;font-size:12px;">${r.total_time || r.gap_first || r.gap_prev || '-'}</td>
             <td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>
+            <td class="hide-mobile" style="font-family:monospace;font-size:12px;">${r.top_speed ? r.top_speed + ' km/h' : '-'}</td>
           </tr>`;
         });
-        tbl += '</table>';
-        div.innerHTML = tbl;
+        tbl += '</table></div>';
+        // Best laps view
+        let bl = `<div id="bestlaps-${sess.id}" style="display:none;"><table><tr><th>Rank</th><th>Rider</th><th>Best Lap</th><th>Lap #</th><th class="hide-mobile">Team</th></tr>`;
+        if (analytics && analytics.best_laps) {
+          analytics.best_laps.forEach(b => {
+            bl += `<tr><td class="${b.rank <= 3 ? `pos-${b.rank}` : ''}">#${b.rank}</td>
+              <td><strong>${b.rider_name}</strong></td>
+              <td style="font-family:monospace;font-weight:700;color:var(--accent);">${b.best_lap_time}</td>
+              <td>Lap ${b.best_lap_number || '-'}</td>
+              <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${b.team_name || '-'}</td>
+            </tr>`;
+          });
+        } else { bl += '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No data</td></tr>'; }
+        bl += '</table></div>';
+        // Top speed view
+        let ts = `<div id="topspeed-${sess.id}" style="display:none;"><table><tr><th>Rank</th><th>Rider</th><th>Top Speed</th><th class="hide-mobile">Team</th></tr>`;
+        if (analytics && analytics.top_speeds) {
+          analytics.top_speeds.forEach(s => {
+            ts += `<tr><td class="${s.rank <= 3 ? `pos-${s.rank}` : ''}">#${s.rank}</td>
+              <td><strong>${s.rider_name}</strong></td>
+              <td style="font-family:monospace;font-weight:700;color:var(--accent);">${s.top_speed} <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">km/h</span></td>
+              <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${s.team_name || '-'}</td>
+            </tr>`;
+          });
+        } else { ts += '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No data</td></tr>'; }
+        ts += '</table></div>';
+        // Weather view
+        let wx = '';
+        if (analytics && analytics.weather) {
+          const w = analytics.weather;
+          wx = `<div id="weather-${sess.id}" style="display:none;">
+            <div class="detail-grid p-3">
+              <div class="stat-card"><div class="val">${w.track_condition || '-'}</div><div class="lbl">Track</div></div>
+              <div class="stat-card"><div class="val">${w.air_temp || '-'}</div><div class="lbl">Air Temp</div></div>
+              <div class="stat-card"><div class="val">${w.ground_temp || '-'}</div><div class="lbl">Ground Temp</div></div>
+              <div class="stat-card"><div class="val">${w.humidity || '-'}</div><div class="lbl">Humidity</div></div>
+              <div class="stat-card"><div class="val">${w.weather || '-'}</div><div class="lbl">Weather</div></div>
+            </div>
+          </div>`;
+        }
+        div.innerHTML = tabs + tbl + bl + ts + (wx || '');
       }
     }
   } catch (err) { console.error(err); }
 }
+
+function switchSessView(el, targetId) {
+  const parent = el.closest('details') || el.closest('.card');
+  if (!parent) return;
+  parent.querySelectorAll('.session-nav').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const container = el.closest('[class*="results-"]') || parent.querySelector('[class*="results-"]');
+  if (container) container.querySelectorAll('[id^="table-"], [id^="bestlaps-"], [id^="topspeed-"], [id^="weather-"]').forEach(d => d.style.display = 'none');
+  const target = document.getElementById(targetId);
+  if (target) target.style.display = 'block';
+}
+
+// ── Teams ──
+async function loadTeams() {
+  try {
+    const cat = document.getElementById('team-cat').value;
+    const container = document.getElementById('teams-grid');
+    container.innerHTML = '<div class="col-span-3 text-center py-8" style="color:var(--text-secondary);">Loading...</div>';
+    const teams = await api(`/teams/detail?year=2026${cat ? `&category=${cat}` : ''}`);
+    if (!teams || teams.length === 0) { container.innerHTML = '<div class="col-span-3 text-center py-8" style="color:var(--text-secondary);">No teams data</div>'; return; }
+    // Dedup by constructor_name
+    const seen = new Set();
+    const uniqueTeams = [];
+    teams.forEach(t => {
+      const key = t.constructor_name;
+      if (!seen.has(key)) { seen.add(key); uniqueTeams.push(t); }
+    });
+    // Sort by constructor points
+    uniqueTeams.sort((a, b) => b.constructor_points - a.constructor_points);
+    container.innerHTML = uniqueTeams.map(t => `
+      <div class="card p-4 card-hover">
+        <div class="flex items-center gap-2 mb-3">
+          <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${t.color || '#666'};"></span>
+          <h3 class="font-bold">${t.constructor_name}</h3>
+        </div>
+        <div class="text-xs mb-2" style="color:var(--text-secondary);">${t.team_name} ${t.rider_count > 0 ? `&middot; ${t.rider_count} rider(s)` : ''}</div>
+        <div class="text-sm font-bold" style="color:var(--accent);">${t.constructor_points} pts</div>
+        ${t.riders && t.riders.length > 0 ? `<div class="mt-3 pt-3" style="border-top:1px solid var(--border-color);">
+          ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${t.riders.length > 1 ? 'rider-row' : ''}" ${t.riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"` : ''}>
+            <span><strong>${r.rider_name}</strong> #${r.rider_number || '-'}</span>
+            <span style="color:var(--accent);font-weight:700;">${r.points} pts</span>
+          </div>`).join('')}
+        </div>` : ''}
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+// ── Season Stats ──
+async function loadSeasonStats() {
+  try {
+    const cat = document.getElementById('stats-cat').value;
+    const data = await api(`/season/stats?year=2026${cat ? `&category=${cat}` : ''}`);
+    renderStatList('stats-wins', data.wins, 'wins', '🏆');
+    renderStatList('stats-podiums', data.podiums, 'podiums', '🥇');
+    renderStatList('stats-fl', data.fastest_laps, 'fastest laps', '⚡');
+    renderSpeedList('stats-speed', data.top_speeds);
+  } catch (err) { console.error(err); }
+}
+
+function renderStatList(id, items, label, icon) {
+  const el = document.getElementById(id);
+  if (!items || items.length === 0) { el.innerHTML = '<span style="color:var(--text-muted);">No data</span>'; return; }
+  el.innerHTML = items.map((r, i) => `<div class="flex items-center justify-between py-1.5 ${i > 0 ? 'mt-1' : ''}">
+    <span>${icon} <strong>${r.name}</strong></span>
+    <span style="color:var(--accent);font-weight:700;">${r.count} ${label}</span>
+  </div>`).join('');
+}
+
+function renderSpeedList(id, items) {
+  const el = document.getElementById(id);
+  if (!items || items.length === 0) { el.innerHTML = '<span style="color:var(--text-muted);">No data</span>'; return; }
+  el.innerHTML = items.map((r, i) => `<div class="flex items-center justify-between py-1.5 ${i > 0 ? 'mt-1' : ''}">
+    <span><strong>${r.name}</strong> <span style="color:var(--text-secondary);font-size:11px;">#${r.number || ''}</span></span>
+    <span style="font-family:monospace;font-weight:700;color:var(--accent);">${r.top_speed} km/h</span>
+  </div>`).join('');
+}
+
+// ── Rider Progress ──
+async function loadRiderList() {
+  try {
+    const cat = document.getElementById('stats-cat')?.value || '';
+    const data = await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`);
+    const sel = document.getElementById('rider-select');
+    sel.innerHTML = '<option value="">Select a rider...</option>' +
+      data.map(r => `<option value="${r.rider_id}">${r.rider_name} (${r.constructor_name || ''})</option>`).join('');
+  } catch (err) { console.error(err); }
+}
+
+function showRiderProgress(riderId, riderName) {
+  // Switch to stats tab and select rider
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelector('[data-tab="stats"]').classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-stats').classList.add('active');
+  const sel = document.getElementById('rider-select');
+  // Find and select the rider
+  for (const opt of sel.options) { if (opt.value === riderId) { sel.value = riderId; break; } }
+  loadRiderProgress();
+}
+
+async function loadRiderProgress() {
+  try {
+    const riderId = document.getElementById('rider-select').value;
+    const el = document.getElementById('rider-progress');
+    if (!riderId) { el.innerHTML = '<span style="color:var(--text-secondary);font-size:13px;">Select a rider to view their progress</span>'; return; }
+    el.innerHTML = '<span class="text-xs" style="color:var(--text-muted);">Loading...</span>';
+    const data = await api(`/riders/${riderId}/progress?year=2026`);
+    if (!data.races || data.races.length === 0) { el.innerHTML = '<span style="color:var(--text-secondary);">No progress data</span>'; return; }
+    
+    let html = `<div class="card p-4"><div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <div><span class="font-bold">${data.races[0].rider_name || data.rider_id}</span> <span class="text-sm" style="color:var(--accent);font-weight:700;">${data.total_points} pts</span></div>
+      <div class="text-xs" style="color:var(--text-secondary);">${data.races.length} sessions</div>
+    </div>`;
+    
+    // Chart
+    const chartId = 'riderChart_' + Math.random().toString(36).substr(2, 9);
+    html += `<canvas id="${chartId}" height="200" class="mb-4"></canvas>`;
+    
+    // Table
+    html += '<table><tr><th>Round</th><th>Session</th><th>Pos</th><th>Points</th><th class="hide-mobile">Best Lap</th><th class="hide-mobile">Top Speed</th></tr>';
+    data.races.forEach(r => {
+      html += `<tr>
+        <td>R${r.round}</td>
+        <td><span style="color:var(--text-secondary);font-size:12px;">${r.event || ''} ${r.session_label || r.session_type}</span></td>
+        <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position ? `P${r.position}` : 'DNF'}</td>
+        <td style="font-weight:700;color:var(--accent);">+${r.points} <span style="font-weight:400;color:var(--text-secondary);">(${r.total_points})</span></td>
+        <td class="hide-mobile" style="font-family:monospace;">${r.best_lap_time || '-'}</td>
+        <td class="hide-mobile" style="font-family:monospace;">${r.top_speed ? r.top_speed + ' km/h' : '-'}</td>
+      </tr>`;
+    });
+    html += '</table></div>';
+    el.innerHTML = html;
+    
+    // Draw chart
+    const ctx = document.getElementById(chartId).getContext('2d');
+    const labels = data.races.map(r => `R${r.round}`);
+    const cumulativePoints = data.races.map(r => r.total_points);
+    const positions = data.races.map(r => r.position || 20);
+    const maxPts = Math.max(...cumulativePoints);
+    
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Cumulative Points', data: cumulativePoints, borderColor: '#e30613', backgroundColor: 'rgba(227,6,19,.1)', fill: true, tension: .3, pointRadius: 3, yAxisID: 'y' },
+          { label: 'Position (inverted)', data: positions.map(p => p || 20), borderColor: '#d4a800', backgroundColor: 'rgba(212,168,0,.1)', fill: false, tension: .3, pointRadius: 3, borderDash: [5,5], yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#999', font: { size: 11 } } } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999' }, title: { display: true, text: 'Points', color: '#999' } },
+          y1: { reverse: true, position: 'right', grid: { display: false }, ticks: { color: '#666', stepSize: 2 }, title: { display: true, text: 'Position', color: '#666' } },
+          x: { grid: { display: false }, ticks: { color: '#999' } }
+        }
+      }
+    });
+  } catch (err) { console.error(err); }
+}
+
+// ── Season Progression (multi-line chart) ──
+
+let progressionChartInstance = null;
+
+async function loadProgression() {
+  try {
+    const cat = document.getElementById('prog-cat').value;
+    const data = await api(`/season/progression?year=2026${cat ? `&category=${cat}` : ''}&top_n=15`);
+    if (!data.riders || data.riders.length === 0) { document.getElementById('progressionChart').parentElement.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No progression data</div>'; return; }
+
+    // Build rider toggle checkboxes
+    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72','#e17055','#0984e3','#00cec9'];
+    const controls = document.getElementById('progression-controls');
+    controls.innerHTML = '<button onclick="progSelectAll()" class="text-xs px-2 py-1 rounded" style="background:var(--badge-soft);color:var(--badge-soft-text);border:1px solid var(--border-color);cursor:pointer">✅ All</button> ' +
+      '<button onclick="progClearAll()" class="text-xs px-2 py-1 rounded" style="background:var(--badge-soft);color:var(--badge-soft-text);border:1px solid var(--border-color);cursor:pointer">⬜ Clear</button> ';
+    data.riders.forEach((r, i) => {
+      const checked = i < 8 ? 'checked' : '';
+      controls.innerHTML += `<label class="flex items-center gap-1 text-xs cursor-pointer" style="color:var(--text-primary);display:inline-flex;margin:2px 6px 2px 0;">
+        <input type="checkbox" class="prog-cb" value="${r.rider_id}" data-idx="${i}" ${checked}>
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${colors[i % colors.length]};"></span>
+        ${r.rider_name.split(' ').pop()}
+      </label>`;
+    });
+    controls.innerHTML += '<button onclick="renderProgressionChart()" class="text-xs px-3 py-1.5 rounded ml-2 font-bold text-white" style="background:var(--accent);border:none;cursor:pointer;">📈 Plot</button>';
+
+    // Store data for chart rendering
+    state.progressionData = data;
+    state.progColors = colors;
+    renderProgressionChart();
+
+    // Top stats
+    const top = data.riders.slice(0, 6);
+    const maxRound = data.rounds.length;
+    document.getElementById('progression-top-stats').innerHTML = top.map(r => `
+      <div class="card p-3">
+        <div class="flex items-center gap-2 mb-2">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${colors[data.riders.indexOf(r) % colors.length]};"></span>
+          <span class="font-bold text-sm">${r.rider_name}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div><span style="color:var(--text-secondary)">Total:</span> <strong style="color:var(--accent)">${r.total_points} pts</strong></div>
+          <div><span style="color:var(--text-secondary)">Last:</span> <strong>${r.cumulative[maxRound-1] || 0} pts</strong></div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+function progSelectAll() {
+  document.querySelectorAll('.prog-cb').forEach(cb => cb.checked = true);
+  renderProgressionChart();
+}
+function progClearAll() {
+  document.querySelectorAll('.prog-cb').forEach(cb => cb.checked = false);
+  renderProgressionChart();
+}
+
+function renderProgressionChart() {
+  const data = state.progressionData;
+  if (!data) return;
+  const labels = data.rounds.map(r => r.short_name);
+  const colors = state.progColors || [];
+
+  const checkedCbs = document.querySelectorAll('.prog-cb:checked');
+  const datasets = [];
+  checkedCbs.forEach(cb => {
+    const idx = parseInt(cb.dataset.idx);
+    const rider = data.riders[idx];
+    if (!rider) return;
+    datasets.push({
+      label: rider.rider_name.split(' ').pop(),
+      data: rider.cumulative,
+      borderColor: colors[idx % colors.length],
+      backgroundColor: colors[idx % colors.length] + '20',
+      fill: false,
+      tension: .3,
+      pointRadius: 2,
+      borderWidth: 2,
+    });
+  });
+
+  if (state.progressionChartInstance) state.progressionChartInstance.destroy();
+  const ctx = document.getElementById('progressionChart').getContext('2d');
+  state.progressionChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { color: '#999', font: { size: 10 }, boxWidth: 12, padding: 8 } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} pts` } }
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999' }, title: { display: true, text: 'Points', color: '#999', font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: '#999', font: { size: 9, maxRotation: 45 } } }
+      }
+    }
+  });
+}
+
+
+// ── Teammate Battle ──
+
+async function loadTeammateBattle() {
+  try {
+    const cat = document.getElementById('battle-cat').value;
+    const data = await api(`/teammate-battle?year=2026${cat ? `&category=${cat}` : ''}`);
+    const container = document.getElementById('teammate-battle-container');
+    if (!data.battles || data.battles.length === 0) { container.innerHTML = '<div class="card p-6 text-center" style="color:var(--text-secondary)">No teammate battles available</div>'; return; }
+
+    container.innerHTML = data.battles.map(b => {
+      const h2h = b.head_to_head[0] || {};
+      return `<div class="card p-4 mb-4 battle-card" style="border-left-color:${b.color};">
+        <div class="flex items-center gap-2 mb-3">
+          <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${b.color};"></span>
+          <h3 class="font-bold">${b.constructor_name}</h3>
+        </div>
+        ${b.riders.map(r => `
+          <div class="flex items-center justify-between text-sm py-1 border-b" style="border-color:var(--border-color);">
+            <span><strong>${r.rider_name}</strong> #${r.rider_number || ''}</span>
+            <span style="color:var(--text-secondary);font-size:12px;">P${r.position || '-'} · ${r.points} pts</span>
+          </div>
+        `).join('')}
+        ${h2h.rider_a ? `
+        <div class="mt-4 pt-3" style="border-top:1px solid var(--border-color);">
+          <div class="text-xs font-bold mb-2" style="color:var(--text-secondary);">🏁 HEAD-TO-HEAD</div>
+          <div class="flex items-center gap-3 text-xs">
+            <div style="flex:1;text-align:right;"><strong>${h2h.rider_a.rider_name}</strong></div>
+            <div style="text-align:center;min-width:100px;">
+              <div class="flex items-center gap-1 justify-center mb-1">
+                <span style="background:var(--accent);color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:13px;">${h2h.a_wins}</span>
+                <span style="color:var(--text-muted);font-size:11px;">-</span>
+                <span style="background:var(--text-muted);color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:13px;">${h2h.b_wins}</span>
+              </div>
+              <div style="height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:${h2h.a_pct}%;background:var(--accent);border-radius:3px;"></div>
+              </div>
+            </div>
+            <div style="flex:1;"><strong>${h2h.rider_b.rider_name}</strong></div>
+          </div>
+          <div class="text-center text-xs mt-1" style="color:var(--text-muted);">${h2h.total_meetings} meetings</div>
+        </div>` : ''}
+        <div class="flex gap-4 mt-3 pt-2 text-xs" style="border-top:1px solid var(--border-color);color:var(--text-secondary);">
+          ${b.riders.map(r => `<div><strong>${r.rider_name}</strong> ${r.wins}W · ${r.podiums}P · avg ${r.avg_position}</div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) { console.error(err); }
+}
+
+
+// ── Rider Comparison ──
+
+async function fillCompareLists() {
+  try {
+    const cat = document.getElementById('stats-cat').value;
+    const riders = await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`);
+    if (!riders || riders.length === 0) return;
+    const opts = '<option value="">Select a rider...</option>' + riders.map(r =>
+      `<option value="${r.rider_id}">${r.rider_name} (${r.constructor_name || ''})</option>`
+    ).join('');
+    document.getElementById('comp-rider-a').innerHTML = opts;
+    document.getElementById('comp-rider-b').innerHTML = opts;
+  } catch (err) { console.error(err); }
+}
+
+function maybeLoadCompare() {
+  const aid = document.getElementById('comp-rider-a').value;
+  const bid = document.getElementById('comp-rider-b').value;
+  if (aid && bid) loadComparison();
+}
+
+async function loadComparison() {
+  try {
+    const aid = document.getElementById('comp-rider-a').value;
+    const bid = document.getElementById('comp-rider-b').value;
+    const cat = document.getElementById('stats-cat').value;
+    if (!aid || !bid) { document.getElementById('comparison-result').innerHTML = '<span style="color:var(--text-secondary);font-size:13px;">Select both riders</span>'; return; }
+
+    const el = document.getElementById('comparison-result');
+    el.innerHTML = '<div class="text-center py-8" style="color:var(--text-secondary)">Loading...</div>';
+    const data = await api(`/riders/compare?rider_a=${aid}&rider_b=${bid}&year=2026${cat ? `&category=${cat}` : ''}`);
+    if (data.error) { el.innerHTML = `<div class="card p-6 text-center" style="color:var(--text-secondary)">${data.error}</div>`; return; }
+
+    const a = data.rider_a, b = data.rider_b, h2h = data.head_to_head;
+    const aPct = h2h.common_sessions > 0 ? Math.round(h2h.a_wins / h2h.common_sessions * 100) : 0;
+    const bPct = h2h.common_sessions > 0 ? Math.round(h2h.b_wins / h2h.common_sessions * 100) : 0;
+
+    el.innerHTML = `
+      <div class="card p-4">
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="compare-stat"><div class="val ${aPct >= bPct ? 'winner' : 'loser'}">${a.rider_name}</div><div class="lbl">${a.constructor_name}</div></div>
+          <div class="compare-stat"><div class="val" style="font-size:16px;color:var(--text-secondary);">vs</div><div class="lbl">${h2h.common_sessions} meetings</div></div>
+          <div class="compare-stat"><div class="val ${bPct >= aPct ? 'winner' : 'loser'}">${b.rider_name}</div><div class="lbl">${b.constructor_name}</div></div>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mb-4 text-center text-xs">
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold winner">${a.total_points}</div><div style="color:var(--text-secondary)">Points</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold" style="color:var(--accent);">${h2h.a_wins} : ${h2h.b_wins}</div><div style="color:var(--text-secondary)">H2H Wins</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold loser">${b.total_points}</div><div style="color:var(--text-secondary)">Points</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold">${a.avg_position}</div><div style="color:var(--text-secondary)">Avg Pos</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold">${a.best_lap_time || '-'}</div><div style="color:var(--text-secondary)">Best Lap</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold">${b.avg_position}</div><div style="color:var(--text-secondary)">Avg Pos</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold">${a.top_speed || '-'} km/h</div><div style="color:var(--text-secondary)">Top Speed</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold">${a.races} / ${b.races}</div><div style="color:var(--text-secondary)">Sessions</div>
+          </div>
+          <div class="p-2" style="background:var(--bg-primary);border-radius:6px;">
+            <div class="font-bold">${b.top_speed || '-'} km/h</div><div style="color:var(--text-secondary)">Top Speed</div>
+          </div>
+        </div>
+        <div class="text-xs mb-2" style="color:var(--text-secondary);">📊 Head-to-Head Bar</div>
+        <div style="height:28px;background:var(--bg-primary);border-radius:14px;overflow:hidden;display:flex;">
+          <div style="width:${aPct}%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">${aPct > 10 ? aPct+'%' : ''}</div>
+          <div style="width:${100-aPct-bPct}%;background:var(--bg-primary);${h2h.ties ? '' : 'display:none'}"></div>
+          <div style="width:${bPct}%;background:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">${bPct > 10 ? bPct+'%' : ''}</div>
+        </div>
+      </div>
+    `;
+  } catch (err) { console.error(err); }
+}
+
+
+// ── Rider Form ──
+
+async function loadRiderFormList() {
+  try {
+    const cat = document.getElementById('stats-cat')?.value || '';
+    const data = await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`);
+    const sel = document.getElementById('form-rider');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Select a rider...</option>' +
+      data.map(r => `<option value="${r.rider_id}">${r.rider_name} (${r.constructor_name || ''})</option>`).join('');
+  } catch (err) { console.error(err); }
+}
+
+async function loadRiderForm() {
+  try {
+    const riderId = document.getElementById('form-rider').value;
+    const el = document.getElementById('rider-form-result');
+    const badge = document.getElementById('form-trend-badge');
+    if (!riderId) { el.innerHTML = '<span style="color:var(--text-secondary);font-size:13px;">Select a rider to view their recent form</span>'; badge.innerHTML = ''; return; }
+    el.innerHTML = '<span class="text-xs" style="color:var(--text-muted);">Loading...</span>';
+    const data = await api(`/riders/form?rider_id=${riderId}&limit=5`);
+    if (!data.races || data.races.length === 0) { el.innerHTML = '<span style="color:var(--text-secondary);">No form data</span>'; return; }
+
+    // Trend badge
+    const trendIcons = { improving: '📈', declining: '📉', stable: '➡️' };
+    const trendColors = { improving: '#00a86b', declining: '#e30613', stable: '#d4a800' };
+    badge.innerHTML = data.trend ? `<span class="badge" style="background:${trendColors[data.trend] || '#666'};color:#fff;">${trendIcons[data.trend] || ''} ${data.trend.toUpperCase()}</span>` : '';
+
+    let html = '<div class="grid grid-cols-1 md:grid-cols-5 gap-2">';
+    data.races.forEach((r, i) => {
+      const bgColor = r.position <= 1 ? 'rgba(255,215,0,.15)' : r.position <= 3 ? 'rgba(205,127,50,.12)' : 'var(--bg-primary)';
+      const borderLeft = r.position <= 1 ? '4px solid #d4a800' : r.position <= 3 ? '4px solid #cd7f32' : '4px solid transparent';
+      html += `<div class="p-3 rounded-lg" style="background:${bgColor};border-left:${borderLeft};">
+        <div class="text-xs" style="color:var(--text-muted);">R${r.round} ${r.event}</div>
+        <div class="text-lg font-bold mt-1 ${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : `#${r.position}`}</div>
+        <div class="text-xs mt-1" style="color:var(--text-secondary);">
+          <span class="badge badge-soft">${r.session_label || r.session_type}</span>
+          <span style="font-weight:700;color:var(--accent);">${r.points} pts</span>
+        </div>
+        <div class="text-xs mt-1" style="color:var(--text-muted);">
+          ${r.best_lap_time || ''} ${r.top_speed ? '· '+r.top_speed+' km/h' : ''}
+        </div>
+        ${r.gap_first ? `<div class="text-xs mt-1" style="color:var(--text-muted);">+${r.gap_first}</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  } catch (err) { console.error(err); }
+}
+
+
+// ── Rider Season Stats Table ──
+
+async function loadSeasonStatsTable() {
+  try {
+    const cat = document.getElementById('stats-cat')?.value || '';
+    const container = document.getElementById('season-stats-table');
+    if (!container) return;
+    container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-muted);">Loading...</div>';
+    // Use rider stats endpoint (no category filter yet — backend handles it)
+    const data = await api(`/riders/stats?year=2026`);
+    if (!data.riders || data.riders.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary);">No stats data</div>'; return; }
+    let html = '<table><tr><th>Rider</th><th style="text-align:right;">Pts</th><th style="text-align:right;">Races</th><th style="text-align:right;">Avg Pos</th><th style="text-align:right;">🏆</th><th style="text-align:right;">🥇</th><th style="text-align:right;">Top5</th><th style="text-align:right;">💥 DNF</th></tr>';
+    data.riders.forEach(r => {
+      html += `<tr>
+        <td><strong>${r.rider_name}</strong> ${r.flag ? `<span class="flag">${r.flag}</span>` : ''} <span style="color:var(--text-muted);font-size:11px;">${r.constructor_name || ''}</span></td>
+        <td style="text-align:right;font-weight:700;color:var(--accent);font-size:15px;">${r.points}</td>
+        <td style="text-align:right;">${r.races}</td>
+        <td style="text-align:right;">${r.avg_position || '-'}</td>
+        <td style="text-align:right;font-weight:700;color:var(--gold);">${r.wins || '-'}</td>
+        <td style="text-align:right;font-weight:700;color:var(--bronze);">${r.podiums || '-'}</td>
+        <td style="text-align:right;">${r.top5 || '-'}</td>
+        <td style="text-align:right;color:var(--text-muted);">${r.dnf || '-'}</td>
+      </tr>`;
+    });
+    html += '</table>';
+    container.innerHTML = html;
+  } catch (err) { console.error(err); container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary);">Error loading stats</div>'; }
+}
+
 
 // ── News ──
 async function loadNews(refresh = false) {
   try {
     const container = document.getElementById('news-list');
     container.innerHTML = '<div class="col-span-2 text-center py-8" style="color:var(--text-secondary)">Loading news...</div>';
-    
     const data = await api(`/news${refresh ? '?refresh=true' : ''}`);
     const articles = data.articles || [];
-    
-    if (articles.length === 0) {
-      container.innerHTML = '<div class="col-span-2 text-center py-8" style="color:var(--text-secondary)">No news articles right now</div>';
-      return;
-    }
-    
+    if (articles.length === 0) { container.innerHTML = '<div class="col-span-2 text-center py-8" style="color:var(--text-secondary)">No news articles right now</div>'; return; }
     container.innerHTML = articles.slice(0, 20).map(a => `
       <a href="${a.link}" target="_blank" rel="noopener" class="news-card card p-4 block" style="text-decoration:none;color:inherit;">
         <div class="flex items-start gap-3">
@@ -717,9 +1218,7 @@ async function loadNews(refresh = false) {
           <div class="flex-1 min-w-0">
             <div class="text-xs mb-1"><span class="badge badge-soft">${a.source_icon} ${a.source}</span></div>
             <div class="font-bold text-sm leading-snug mb-1">${a.title}</div>
-            <div class="text-xs" style="color:var(--text-secondary);">
-              ${(a.description || '').substring(0, 150)}${(a.description || '').length > 150 ? '...' : ''}
-            </div>
+            <div class="text-xs" style="color:var(--text-secondary);">${(a.description || '').substring(0, 150)}${(a.description || '').length > 150 ? '...' : ''}</div>
             <div class="text-xs mt-1" style="color:var(--text-muted);">${a.pub_date ? new Date(a.pub_date).toLocaleDateString() : ''}</div>
           </div>
         </div>
@@ -730,14 +1229,9 @@ async function loadNews(refresh = false) {
 
 // ── Load All ──
 async function loadAll() {
-  await Promise.all([loadPodium(), loadRecentResults(), loadPointsChart()]);
+  await Promise.all([loadPodium(), loadRecentResults(), loadStandingsChart()]);
   const active = document.querySelector('.tab-content.active');
-  if (active) {
-    const id = active.id.replace('tab-', '');
-    if (id === 'standings') loadStandings();
-    if (id === 'races') loadRaces();
-    if (id === 'news') loadNews();
-  }
+  if (active) { const id = active.id.replace('tab-', ''); if (id === 'standings') loadStandings(); if (id === 'races') loadRaces(); if (id === 'teams') loadTeams(); if (id === 'news') loadNews(); }
 }
 
 // ── Start ──

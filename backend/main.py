@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.core.database import init_db
-from backend.api import routes, news
+from backend.api import routes, news, analytics
 
 
 @asynccontextmanager
@@ -42,6 +42,7 @@ async def health():
 # ── Register routes ──
 app.include_router(routes.router, prefix="/api", tags=["Data"])
 app.include_router(news.router, prefix="/api", tags=["News"])
+app.include_router(analytics.router, prefix="/api", tags=["Analytics"])
 
 
 # ── Serve frontend (optional — CF Pages serves it separately) ──
