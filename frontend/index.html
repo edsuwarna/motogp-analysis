@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotoGP Analysis 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.tailwindcss.com">
+  { darkMode: 'class' }
+</script>
+<style>
+  :root {
+    --bg-primary: #0d0d0d;
+    --bg-card: #1a1a1a;
+    --bg-card-hover: #222;
+    --border-color: #2a2a2a;
+    --text-primary: #e8e8e8;
+    --text-secondary: #999;
+    --text-muted: #666;
+    --table-border: #1f1f1f;
+    --hover-bg: rgba(227, 6, 19, .05);
+    --input-bg: #1a1a1a;
+    --badge-soft: #222;
+    --badge-soft-text: #ccc;
+    --accent: #e30613;
+    --accent-hover: #c00510;
+    --accent-glow: rgba(227, 6, 19, .3);
+    --gold: #d4a800;
+    --silver: #a8a8a8;
+    --bronze: #cd7f32;
+    --sector1: #e30613;
+    --sector2: #ff6b35;
+    --sector3: #00a86b;
+  }
+  .light {
+    --bg-primary: #f4f2f0;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f9f7f5;
+    --border-color: #ddd;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --table-border: #eee;
+    --hover-bg: rgba(227, 6, 19, .04);
+    --input-bg: #fff;
+    --badge-soft: #eee;
+    --badge-soft-text: #555;
+    --accent: #cc0000;
+    --accent-hover: #aa0000;
+  }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background .3s, color .3s;
+  }
+  .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; transition: all .2s; }
+  .card:hover { border-color: var(--accent); }
+  .moto-red { color: var(--accent); }
+  .bg-moto-red { background: var(--accent); }
+  .border-moto-red { border-color: var(--accent); }
+  
+  .nav-link {
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all .2s;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: .3px;
+  }
+  .nav-link:hover { color: var(--text-primary); background: var(--hover-bg); }
+  .nav-link.active { color: #fff; background: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+  .light .nav-link.active { color: #fff; }
+  
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--accent);
+    font-weight: 700;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--table-border); font-size: 13px; transition: background .15s; }
+  tr:hover td { background: var(--hover-bg); }
+  
+  .pos-1 { color: var(--gold); font-weight: 800; }
+  .pos-2 { color: var(--silver); font-weight: 700; }
+  .pos-3 { color: var(--bronze); font-weight: 700; }
+  
+  select, input {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    transition: all .2s;
+  }
+  select:focus, input:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  
+  .theme-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-primary);
+    transition: all .2s;
+  }
+  .theme-btn:hover { border-color: var(--accent); }
+  
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  .badge-motogp { background: var(--accent); color: #fff; }
+  .badge-moto2 { background: #1a5276; color: #fff; }
+  .badge-moto3 { background: #1a6e3a; color: #fff; }
+  
+  .hero-gradient {
+    background: linear-gradient(135deg, #0d0d0d 0%, #1a0a0a 50%, #0d0d0d 100%);
+    border-bottom: 3px solid var(--accent);
+  }
+  .light .hero-gradient {
+    background: linear-gradient(135deg, #f4f2f0 0%, #fce8e8 50%, #f4f2f0 100%);
+  }
+  
+  .loading { opacity: .5; pointer-events: none; position: relative; }
+  .loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(227,6,19,.05), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  
+  .podium-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .podium-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+  .podium-1::before { background: var(--gold); }
+  .podium-2::before { background: var(--silver); }
+  .podium-3::before { background: var(--bronze); }
+  
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .flag { font-size: 20px; }
+  
+  .news-card {
+    transition: all .2s;
+  }
+  .news-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,.3);
+  }
+  .light .news-card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,.1);
+  }
+  
+  .accent-line {
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; }
+  
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  @media (max-width: 768px) {
+    .nav-link { padding: 8px 12px; font-size: 12px; }
+    .stat-value { font-size: 22px; }
+  }
+</style>
+</head>
+<body class="dark">
+<div id="app" class="min-h-screen">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50" style="background:var(--bg-primary);border-bottom:1px solid var(--border-color);">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🏍️</span>
+        <span class="text-lg font-extrabold tracking-tight">
+          <span class="moto-red">Moto</span>GP 
+          <span style="color:var(--text-secondary);font-size:13px;font-weight:400;">Analysis 2026</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2 overflow-x-auto" id="nav-tabs">
+        <span class="nav-link active" data-tab="dashboard">📊 Dashboard</span>
+        <span class="nav-link" data-tab="standings">🏆 Standings</span>
+        <span class="nav-link" data-tab="races">🏁 Races</span>
+        <span class="nav-link" data-tab="news">📰 News</span>
+        <button class="theme-btn ml-2" onclick="toggleTheme()" id="theme-btn">🌙</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero-gradient py-8 md:py-12">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex flex-wrap items-center justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-3xl">🏍️</span>
+          <h1 class="text-2xl md:text-4xl font-black tracking-tight">
+            2026 <span class="moto-red">MotoGP</span>
+          </h1>
+        </div>
+        <p class="text-sm" style="color:var(--text-secondary);">World Championship — Live Standings & Race Results</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <select id="cat-filter" onchange="loadAll()" class="text-sm">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+    </div>
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8" id="hero-stats">
+      <div class="card p-4 text-center"><div class="stat-value" id="stat-events">-</div><div class="stat-label">Events</div></div>
+      <div class="card p-4 text-center"><div class="stat-value" id="stat-sessions">-</div><div class="stat-label">Sessions</div></div>
+      <div class="card p-4 text-center"><div class="stat-value" id="stat-results">-</div><div class="stat-label">Results</div></div>
+      <div class="card p-4 text-center"><div class="stat-value" id="stat-riders">-</div><div class="stat-label">Riders</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+
+<!-- DASHBOARD -->
+<div class="tab-content active" id="tab-dashboard">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold">🏆 Championship Top 3</h2>
+    <div class="accent-line mt-2"></div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="podium"></div>
+  
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">📊 Season Progression</h2>
+    <div class="accent-line mt-2"></div>
+  </div>
+  <div class="card p-4 md:p-6">
+    <canvas id="pointsChart" height="300"></canvas>
+  </div>
+  
+  <div class="mb-6 mt-10">
+    <h2 class="text-xl font-bold">🏁 Recent Results</h2>
+    <div class="accent-line mt-2"></div>
+  </div>
+  <div class="card overflow-x-auto" id="recent-results"></div>
+</div>
+
+<!-- STANDINGS -->
+<div class="tab-content" id="tab-standings">
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div>
+      <h2 class="text-xl font-bold">🏆 Rider Standings</h2>
+      <div class="accent-line mt-2"></div>
+    </div>
+    <div class="flex items-center gap-3">
+      <select id="standing-cat" onchange="loadStandings()" class="text-sm">
+        <option value="">All Categories</option>
+      </select>
+      <select id="standing-class" onchange="loadStandings()" class="text-sm">
+        <option value="riders">Riders</option>
+        <option value="constructors">Constructors</option>
+      </select>
+    </div>
+  </div>
+  <div class="card overflow-x-auto" id="standings-table"></div>
+</div>
+
+<!-- RACES -->
+<div class="tab-content" id="tab-races">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold">🏁 2026 Race Calendar</h2>
+    <div class="accent-line mt-2"></div>
+  </div>
+  <div id="race-list"></div>
+</div>
+
+<!-- NEWS -->
+<div class="tab-content" id="tab-news">
+  <div class="flex items-center justify-between gap-4 mb-6">
+    <div>
+      <h2 class="text-xl font-bold">📰 MotoGP News</h2>
+      <div class="accent-line mt-2"></div>
+    </div>
+    <button class="px-4 py-2 rounded-lg text-sm font-bold text-white" style="background:var(--accent);" onclick="loadNews(true)">🔄 Refresh</button>
+  </div>
+  <div id="news-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+</div>
+
+</main>
+
+<footer style="border-top:1px solid var(--border-color);padding:24px;text-align:center;font-size:12px;color:var(--text-muted);margin-top:40px;">
+  🏍️ MotoGP Analysis 2026 &mdash; Data from MotoGP pulselive API &middot; Not affiliated with MotoGP
+</footer>
+
+</div>
+
+<script>
+const API = '';
+let state = { categories: [], events: [], standings: [], pointsChart: null };
+
+// ── Theme ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-btn');
+  if (html.classList.contains('dark')) {
+    html.classList.remove('dark');
+    btn.textContent = '☀️';
+  } else {
+    html.classList.add('dark');
+    btn.textContent = '🌙';
+  }
+}
+
+// ── Navigation ──
+document.getElementById('nav-tabs').addEventListener('click', e => {
+  const link = e.target.closest('.nav-link');
+  if (!link) return;
+  const tab = link.dataset.tab;
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  link.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if (tab === 'standings') loadStandings();
+  if (tab === 'races') loadRaces();
+  if (tab === 'news') loadNews();
+});
+
+// ── API ──
+async function api(path) {
+  const res = await fetch(`${API}/api${path}`);
+  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  return res.json();
+}
+
+// ── Init ──
+async function init() {
+  try {
+    const [cats, events, dash] = await Promise.all([
+      api('/categories?year=2026'),
+      api('/events?year=2026'),
+      api('/dashboard?year=2026'),
+    ]);
+    state.categories = cats;
+    state.events = events;
+    
+    // Category filter
+    const catOpts = '<option value="">All Categories</option>' +
+      cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    document.getElementById('cat-filter').innerHTML = catOpts;
+    document.getElementById('standing-cat').innerHTML = catOpts;
+    
+    // Stats
+    const totalSessions = events.reduce((s, e) => s + (e.session_count || 0), 0);
+    document.getElementById('stat-events').textContent = events.length;
+    document.getElementById('stat-sessions').textContent = totalSessions;
+    document.getElementById('stat-results').textContent = dash.total_results || '-';
+    document.getElementById('stat-riders').textContent = dash.top_3 ? '85+' : '-';
+    
+    await loadPodium();
+    await loadRecentResults();
+    await loadPointsChart();
+  } catch (err) {
+    console.error('Init error:', err);
+  }
+}
+
+// ── Podium ──
+async function loadPodium() {
+  try {
+    const dash = await api('/dashboard?year=2026');
+    const podium = document.getElementById('podium');
+    if (!dash.top_3 || dash.top_3.length === 0) {
+      podium.innerHTML = '<div class="card p-6 text-center" style="color:var(--text-secondary)">No standings data yet</div>';
+      return;
+    }
+    podium.innerHTML = dash.top_3.map((r, i) => `
+      <div class="card podium-card podium-${i+1} p-5 text-center">
+        <div class="text-3xl mb-2">${['🥇','🥈','🥉'][i]}</div>
+        <div class="text-lg font-bold">${r.rider_name}</div>
+        <div class="text-sm" style="color:var(--text-secondary)">${r.constructor_name}</div>
+        <div class="text-2xl font-black moto-red mt-2">${r.points} <span style="font-size:12px;color:var(--text-secondary);">pts</span></div>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+// ── Points Chart ──
+async function loadPointsChart() {
+  try {
+    const standings = await api('/standings/riders?year=2026');
+    if (!standings || standings.length === 0) return;
+    
+    // Top 10 for chart
+    const top = standings.slice(0, 10);
+    const labels = top.map(r => r.rider_name.split(' ').pop());
+    const points = top.map(r => r.points);
+    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8'];
+    
+    if (state.pointsChart) state.pointsChart.destroy();
+    
+    const ctx = document.getElementById('pointsChart').getContext('2d');
+    state.pointsChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Points',
+          data: points,
+          backgroundColor: colors.slice(0, top.length),
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(255,255,255,.05)' },
+            ticks: { color: '#999' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#999' }
+          }
+        }
+      }
+    });
+  } catch (err) { console.error(err); }
+}
+
+// ── Recent Results ──
+async function loadRecentResults() {
+  try {
+    const container = document.getElementById('recent-results');
+    // Sort by date descending to get latest first
+    const cat = document.getElementById('cat-filter').value;
+    const events = state.events
+      .filter(e => e.session_count > 0)
+      .sort((a, b) => (b.date_start || '').localeCompare(a.date_start || ''))
+      .slice(0, 2);
+    
+    if (events.length === 0) {
+      container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No race data yet</div>';
+      return;
+    }
+    
+    let html = '';
+    for (const ev of events) {
+      const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
+      const raceSessions = sessions.filter(s => s.type === 'R' || s.type === 'SPR');
+      if (raceSessions.length === 0) continue;
+      
+      html += `<div class="p-4" style="border-bottom:1px solid var(--border-color);">
+        <div class="font-bold text-sm mb-2">${ev.name} <span style="color:var(--text-secondary);font-weight:400;">R${ev.round}</span></div>`;
+      
+      for (const sess of raceSessions.slice(0, 2)) {
+        const results = await api(`/sessions/${sess.id}/results`);
+        if (results.length === 0) continue;
+        html += `<div class="text-xs mb-1" style="color:var(--text-secondary);">${sess.type === 'R' ? '🏁 Race' : '⚡ Sprint'}</div>`;
+        html += `<table><tr><th>Pos</th><th>Rider</th><th>Team</th><th>Time/Gap</th></tr>`;
+        results.slice(0, 5).forEach(r => {
+          html += `<tr>
+            <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : `#${r.position}`}</td>
+            <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
+            <td style="color:var(--text-secondary);font-size:12px;">${r.team_name || r.constructor_name || '-'}</td>
+            <td style="font-family:monospace;">${r.total_time || r.gap_first || '-'}</td>
+          </tr>`;
+        });
+        html += `</table>`;
+      }
+      html += `</div>`;
+    }
+    container.innerHTML = html || '<div class="p-6 text-center" style="color:var(--text-secondary)">No recent results</div>';
+  } catch (err) { console.error(err); }
+}
+
+// ── Standings ──
+async function loadStandings() {
+  try {
+    const cat = document.getElementById('standing-cat').value;
+    const type = document.getElementById('standing-class').value;
+    const container = document.getElementById('standings-table');
+    container.classList.add('loading');
+    
+    const data = await api(`/standings/${type}?year=2026${cat ? `&category=${cat}` : ''}`);
+    
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No standings data</div>';
+      container.classList.remove('loading');
+      return;
+    }
+    
+    let html = '<table>';
+    if (type === 'riders') {
+      html += `<tr><th>Pos</th><th>Rider</th><th>Number</th><th>Team</th><th>Constructor</th><th style="text-align:right;">Points</th></tr>`;
+      data.forEach(r => {
+        html += `<tr>
+          <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
+          <td><strong>${r.rider_name}</strong></td>
+          <td style="color:var(--text-muted)">#${r.rider_number || '-'}</td>
+          <td style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
+          <td><span class="badge badge-soft">${r.constructor_name || '-'}</span></td>
+          <td style="text-align:right;font-weight:700;font-size:15px;">${r.points}</td>
+        </tr>`;
+      });
+    } else {
+      html += `<tr><th>Pos</th><th>Constructor</th><th style="text-align:right;">Points</th></tr>`;
+      data.forEach(r => {
+        html += `<tr>
+          <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
+          <td><strong>${r.constructor_name}</strong></td>
+          <td style="text-align:right;font-weight:700;">${r.points}</td>
+        </tr>`;
+      });
+    }
+    html += '</table>';
+    container.innerHTML = html;
+    container.classList.remove('loading');
+  } catch (err) { console.error(err); container.classList.remove('loading'); }
+}
+
+// ── Races ──
+async function loadRaces() {
+  try {
+    const cat = document.getElementById('cat-filter').value;
+    const container = document.getElementById('race-list');
+    container.innerHTML = '<div class="text-center py-8" style="color:var(--text-secondary)">Loading...</div>';
+    
+    const events = state.events;
+    let html = '';
+    
+    for (const ev of events) {
+      const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
+      const raceSess = sessions.filter(s => s.type === 'R' || s.type === 'SPR');
+      const hasData = raceSess.length > 0;
+      
+      html += `<div class="card mb-3 overflow-hidden">
+        <div class="p-4 flex items-center justify-between" style="border-bottom:${hasData ? '1px solid var(--border-color)' : 'none'};">
+          <div class="flex items-center gap-3">
+            <span class="text-lg font-bold moto-red">R${ev.round}</span>
+            <div>
+              <div class="font-bold">${ev.name}</div>
+              <div class="text-xs" style="color:var(--text-secondary);">
+                ${ev.circuit_name || ev.country || ''}${ev.date_start ? ` &middot; ${ev.date_start}` : ''}
+                ${ev.session_count ? ` &middot; ${ev.session_count} sessions` : ''}
+              </div>
+            </div>
+          </div>
+          <span class="badge ${hasData ? 'badge-motogp' : 'badge-soft'}">${hasData ? '✅ Results' : '📅 Upcoming'}</span>
+        </div>
+        ${hasData ? `<div class="p-3" style="background:var(--bg-primary);">
+          ${raceSess.map(sess => {
+            const sessLabel = sess.type === 'R' ? '🏁 Race' : '⚡ Sprint';
+            return `<details class="mb-2">
+              <summary class="cursor-pointer text-sm font-bold px-2 py-1 rounded" style="color:var(--accent);">${sessLabel} <span style="color:var(--text-secondary);font-weight:400;">— tap to expand</span></summary>
+              <div class="mt-2 results-${sess.id}"></div>
+            </details>`;
+          }).join('')}
+        </div>` : ''}
+      </div>`;
+    }
+    
+    container.innerHTML = html;
+    
+    // Load results for each race session
+    for (const ev of events) {
+      const sessions = await api(`/events/${ev.id}/sessions${cat ? `?category=${cat}` : ''}`);
+      const raceSess = sessions.filter(s => s.type === 'R' || s.type === 'SPR');
+      for (const sess of raceSess) {
+        const div = document.querySelector(`.results-${sess.id}`);
+        if (!div) continue;
+        const results = await api(`/sessions/${sess.id}/results`);
+        if (results.length === 0) { div.innerHTML = '<p class="text-sm" style="color:var(--text-muted)">No results</p>'; continue; }
+        let tbl = '<table><tr><th>Pos</th><th>Rider</th><th>Nat</th><th>Team</th><th>Time/Gap</th><th>Best Lap</th></tr>';
+        results.forEach(r => {
+          tbl += `<tr>
+            <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position || '-')}</td>
+            <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
+            <td class="flag">${r.rider_country || '-'}</td>
+            <td style="color:var(--text-secondary);font-size:12px;">${r.team_name || r.constructor_name || '-'}</td>
+            <td style="font-family:monospace;font-size:12px;">${r.total_time || r.gap_first || r.gap_prev || '-'}</td>
+            <td style="font-family:monospace;font-size:12px;">${r.best_lap_time || '-'}</td>
+          </tr>`;
+        });
+        tbl += '</table>';
+        div.innerHTML = tbl;
+      }
+    }
+  } catch (err) { console.error(err); }
+}
+
+// ── News ──
+async function loadNews(refresh = false) {
+  try {
+    const container = document.getElementById('news-list');
+    container.innerHTML = '<div class="col-span-2 text-center py-8" style="color:var(--text-secondary)">Loading news...</div>';
+    
+    const data = await api(`/news${refresh ? '?refresh=true' : ''}`);
+    const articles = data.articles || [];
+    
+    if (articles.length === 0) {
+      container.innerHTML = '<div class="col-span-2 text-center py-8" style="color:var(--text-secondary)">No news articles right now</div>';
+      return;
+    }
+    
+    container.innerHTML = articles.slice(0, 20).map(a => `
+      <a href="${a.link}" target="_blank" rel="noopener" class="news-card card p-4 block" style="text-decoration:none;color:inherit;">
+        <div class="flex items-start gap-3">
+          ${a.thumbnail ? `<img src="${a.thumbnail}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" loading="lazy" onerror="this.style.display='none'">` : ''}
+          <div class="flex-1 min-w-0">
+            <div class="text-xs mb-1"><span class="badge badge-soft">${a.source_icon} ${a.source}</span></div>
+            <div class="font-bold text-sm leading-snug mb-1">${a.title}</div>
+            <div class="text-xs" style="color:var(--text-secondary);">
+              ${(a.description || '').substring(0, 150)}${(a.description || '').length > 150 ? '...' : ''}
+            </div>
+            <div class="text-xs mt-1" style="color:var(--text-muted);">${a.pub_date ? new Date(a.pub_date).toLocaleDateString() : ''}</div>
+          </div>
+        </div>
+      </a>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+// ── Load All ──
+async function loadAll() {
+  await Promise.all([loadPodium(), loadRecentResults(), loadPointsChart()]);
+  const active = document.querySelector('.tab-content.active');
+  if (active) {
+    const id = active.id.replace('tab-', '');
+    if (id === 'standings') loadStandings();
+    if (id === 'races') loadRaces();
+    if (id === 'news') loadNews();
+  }
+}
+
+// ── Start ──
+init();
+</script>
+</body>
+</html>
