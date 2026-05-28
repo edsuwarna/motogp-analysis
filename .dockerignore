@@ -1,0 +1,9 @@
+motogp.db
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.env
+*.egg-info/
+dist/
+build/
