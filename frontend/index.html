@@ -766,7 +766,6 @@ async function loadTeams() {
       <div class="card p-4">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
-            <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${g.color};"></span>
             <h3 class="font-bold text-lg">${g.constructor}</h3>
           </div>
           <span class="text-sm font-bold" style="color:var(--accent);">${g.constructor_points} pts</span>
@@ -774,7 +773,10 @@ async function loadTeams() {
         ${g.teams.map((t, ti) => `
           <div class="${ti > 0 ? 'mt-3 pt-3' : ''}" style="${ti > 0 ? 'border-top:1px solid var(--border-color);' : ''}">
             <div class="flex items-center justify-between">
-              <div class="font-semibold" style="font-size:14px;">${t.team_name}</div>
+              <div class="flex items-center gap-2">
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${t.color || '#666'};flex-shrink:0;"></span>
+                <div class="font-semibold" style="font-size:14px;">${t.team_name}</div>
+              </div>
               ${t.rider_count > 0 ? `<span class="text-xs" style="color:var(--text-secondary);">${t.rider_count} rider(s)</span>` : ''}
             </div>
             ${t.riders && t.riders.length > 0 ? `<div class="mt-2">

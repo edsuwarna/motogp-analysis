@@ -49,6 +49,61 @@ CONSTRUCTOR_COLORS = {
     "MV Agusta": "#8b4513",
 }
 
+# ── Per-team colours (overrides constructor colours for known teams) ──
+TEAM_COLORS = {
+    # MotoGP
+    "Ducati Lenovo Team": "#cc0000",
+    "Aprilia Racing": "#9d2235",
+    "Honda HRC Castrol": "#a5a5a5",
+    "Monster Energy Yamaha MotoGP Team": "#003366",
+    "Red Bull KTM Factory Racing": "#ff6600",
+    "Red Bull KTM Tech3": "#e85200",
+    "BK8 Gresini Racing MotoGP": "#00bfff",
+    "Pertamina Enduro VR46 Racing Team": "#e5b80b",
+    "Prima Pramac Yamaha MotoGP": "#0055a5",
+    "Castrol Honda LCR": "#c02e2e",
+    "Trackhouse MotoGP Team": "#1a1a2e",
+    "Pro Honda LCR": "#c02e2e",
+    # Moto2
+    "CFMOTO Gaviota Aspar Team": "#8b0000",
+    "CFMOTO Inde Aspar Team": "#8b0000",
+    "CFMOTO Impulse Aspar Team": "#8b0000",
+    "CFMOTO Power Electronics Aspar Team": "#8b0000",
+    "CFMOTO Valresa Aspar Team": "#8b0000",
+    "Red Bull KTM Ajo": "#ff6600",
+    "ELF Marc VDS Racing Team": "#0066cc",
+    "LIQUI MOLY Dynavolt Intact GP": "#004d99",
+    "Liqui Moly Dynavolt Intact GP": "#004d99",
+    "ITALJET Gresini Moto2": "#00bfff",
+    "Idemitsu Honda Team Asia": "#a5a5a5",
+    "Italtrans Racing Team": "#1a1a2e",
+    "OnlyFans American Racing Team": "#cc0000",
+    "QJMOTOR - Bordoy - MSI": "#003366",
+    "QJMOTOR - El Motorista - MSI": "#003366",
+    "QJMOTOR - GALFER - MSI": "#003366",
+    "QJMOTOR - PONT GRUP - MSI": "#003366",
+    "AEON Credit - MT Helmets - MSI": "#003366",
+    "Beta Tools SpeedRS Team": "#8b0000",
+    "BLU CRU Pramac Yamaha Moto2": "#0055a5",
+    "Folladore SpeedRS Team": "#8b0000",
+    "HDR SpeedRS Team": "#8b0000",
+    "SYNC Group SpeedRS Team": "#8b0000",
+    "Momoven Idrofoglia RW Racing Team": "#2e8b57",
+    "GRYD - MLav Racing": "#a5a5a5",
+    "Klint Forward Team": "#00a86b",
+    "KLINT Racing Team": "#00a86b",
+    "Leopard Racing": "#ffd700",
+    "Rivacold Snipers Team": "#c02e2e",
+    "SIC58 Squadra Corse": "#cc0000",
+    # Moto3
+    "CIP Green Power": "#2e8b57",
+    "LEVEL UP - MTA": "#003366",
+    "CODE Motorsports": "#cc0000",
+    "Honda Team Asia": "#a5a5a5",
+    "REDS Fantic Racing": "#cc0000",
+    "Liqui Moly Dynavolt Intact GP Moto3": "#004d99",
+}
+
 
 def _pts_for_position(pos: int, session_type: str) -> int:
     if session_type in ("SPR", "S"):
@@ -412,7 +467,7 @@ async def get_teams_detail(
             "team_id": t.team_id,
             "team_name": t.team_name,
             "constructor_name": constr,
-            "color": CONSTRUCTOR_COLORS.get(constr, "#666"),
+            "color": TEAM_COLORS.get(t.team_name, CONSTRUCTOR_COLORS.get(constr, "#666")),
             "constructor_points": constructor_standings.get(constr, 0),
             "riders": riders,
             "rider_count": len(riders),
