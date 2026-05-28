@@ -871,16 +871,21 @@ async def compare_riders(
     if not sa or not sb:
         return {"error": "Rider not found"}
 
-    # Get all RAC/SPR sessions
+    # Get all RAC/SPR sessions (optionally filtered by category)
+    cat_filter = ""
+    cat_params = {}
+    if category:
+        cat_filter = " AND s.category_id = :cat"
+        cat_params["cat"] = category
     sess_res = await db.execute(
-        text("""
+        text(f"""
             SELECT s.id, s.type, e.round, e.short_name
             FROM sessions s
             JOIN events e ON e.id = s.event_id
-            WHERE e.season_year = :year AND s.type IN ('RAC', 'SPR')
+            WHERE e.season_year = :year AND s.type IN ('RAC', 'SPR'){cat_filter}
             ORDER BY e.round, s.date
         """),
-        {"year": year},
+        {"year": year, **cat_params},
     )
     sessions = sess_res.fetchall()
 
@@ -976,8 +981,9 @@ async def compare_riders(
             "best_lap_time": a_best_lap,
             "top_speed": a_top_speed,
             "avg_position": round(
-                sum(s["position"] for s in sessions_a if s["position"]), 2
-            ) / max(len([s for s in sessions_a if s["position"]]), 1),
+                sum(s["position"] for s in sessions_a if s["position"])
+                / max(len([s for s in sessions_a if s["position"]]), 1), 2
+            ),
             "sessions": sessions_a,
         },
         "rider_b": {
@@ -993,8 +999,9 @@ async def compare_riders(
             "best_lap_time": b_best_lap,
             "top_speed": b_top_speed,
             "avg_position": round(
-                sum(s["position"] for s in sessions_b if s["position"]), 2
-            ) / max(len([s for s in sessions_b if s["position"]]), 1),
+                sum(s["position"] for s in sessions_b if s["position"])
+                / max(len([s for s in sessions_b if s["position"]]), 1), 2
+            ),
             "sessions": sessions_b,
         },
         "head_to_head": {
@@ -1086,11 +1093,17 @@ async def get_rider_form(
     rider_id: str = Query(..., description="Rider UUID"),
     year: int = Query(2026),
     limit: int = Query(5, ge=2, le=20),
+    category: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_session),
 ):
     """Recent race/sprint form for a rider: last N results with trend."""
+    cat_filter = ""
+    cat_params = {}
+    if category:
+        cat_filter = " AND s.category_id = :cat"
+        cat_params["cat"] = category
     res = await db.execute(
-        text("""
+        text(f"""
             SELECT e.round, e.short_name, e.country_iso, e.date_start,
                    s.id AS session_id, s.type, s.number, r.position, r.total_laps,
                    r.best_lap_time, r.top_speed, r.status,
@@ -1099,11 +1112,11 @@ async def get_rider_form(
             JOIN sessions s ON s.id = r.session_id
             JOIN events e ON e.id = s.event_id
             WHERE r.rider_id = :rid AND e.season_year = :year
-              AND s.type IN ('RAC', 'SPR')
+              AND s.type IN ('RAC', 'SPR'){cat_filter}
             ORDER BY e.round DESC, s.date DESC
             LIMIT :lim
         """),
-        {"rid": rider_id, "year": year, "lim": limit},
+        {"rid": rider_id, "year": year, "lim": limit, **cat_params},
     )
     rows = res.fetchall()
     if not rows:

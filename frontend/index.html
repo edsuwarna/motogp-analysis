@@ -289,7 +289,7 @@
     <div class="accent-line mt-2"></div>
   </div>
   <div class="flex gap-3 mb-4 flex-wrap">
-    <select id="stats-cat" onchange="loadSeasonStats()" class="text-sm"><option value="">All Categories</option></select>
+    <select id="stats-cat" onchange="onStatsCatChange()" class="text-sm"><option value="">All Categories</option></select>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="stats-grid">
     <div class="card p-4"><h3 class="font-bold text-sm mb-3">🏆 Most Wins</h3><div id="stats-wins" class="text-sm" style="color:var(--text-secondary);">Loading...</div></div>
@@ -902,6 +902,14 @@ async function loadSeasonStats() {
     renderStatList('stats-fl', data.fastest_laps, 'fastest laps', '⚡');
     renderSpeedList('stats-speed', data.top_speeds);
   } catch (err) { console.error(err); }
+}
+
+function onStatsCatChange() {
+  loadSeasonStats();
+  loadRiderList();
+  fillCompareLists();
+  loadRiderFormList();
+  loadSeasonStatsTable();
 }
 
 function renderStatList(id, items, label, icon) {
