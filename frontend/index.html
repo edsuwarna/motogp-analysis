@@ -87,6 +87,7 @@
   .battle-bar { height: 24px; border-radius: 12px; transition: width .5s ease; }
   .back-btn { cursor: pointer; padding: 6px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); border: 1px solid var(--accent); transition: all .2s; display: inline-block; background: transparent; }
   .back-btn:hover { background: var(--accent); color: #fff; }
+  .hide-mobile { display: inline; }
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
     .nav-link { padding: 6px 10px; font-size: 11px; }
@@ -96,6 +97,9 @@
     th { padding: 8px 8px; font-size: 10px; }
     td { padding: 7px 8px; font-size: 12px; }
     .detail-grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-title-sub { display: none; }
+    .nav-title-main { font-size: 16px; }
+    .hero-title-sub { display: none; }
   }
   @media (max-width: 480px) {
     .stat-value { font-size: 16px; }
@@ -116,9 +120,9 @@
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center gap-3">
         <span class="text-2xl">🏍️</span>
-        <span class="text-lg font-extrabold tracking-tight">
+        <span class="nav-title-main text-lg font-extrabold tracking-tight">
           <span class="moto-red">Moto</span>GP
-          <span style="color:var(--text-secondary);font-size:13px;font-weight:400;">Analysis 2026</span>
+          <span class="nav-title-sub" style="color:var(--text-secondary);font-size:13px;font-weight:400;">Analysis 2026</span>
         </span>
       </div>
       <div class="flex items-center gap-2 overflow-x-auto" id="nav-tabs">
@@ -147,20 +151,13 @@
             2026 <span class="moto-red">MotoGP</span>
           </h1>
         </div>
-        <p class="text-sm" style="color:var(--text-secondary);">World Championship — Live Standings, Race Results & Analysis</p>
+          <p class="hero-title-sub text-sm" style="color:var(--text-secondary);">World Championship — Live Standings, Race Results & Analysis</p>
       </div>
       <div class="flex items-center gap-3">
         <select id="cat-filter" onchange="onCategoryChange()" class="text-sm">
           <option value="">All Categories</option>
         </select>
       </div>
-    </div>
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6" id="hero-stats">
-      <div class="card p-3 text-center"><div class="stat-value" id="stat-events">-</div><div class="stat-label">Events</div></div>
-      <div class="card p-3 text-center"><div class="stat-value" id="stat-sessions">-</div><div class="stat-label">Sessions</div></div>
-      <div class="card p-3 text-center"><div class="stat-value" id="stat-results">-</div><div class="stat-label">Results</div></div>
-      <div class="card p-3 text-center"><div class="stat-value" id="stat-riders">-</div><div class="stat-label">Riders</div></div>
-      <div class="card p-3 text-center"><div class="stat-value" id="stat-teams">-</div><div class="stat-label">Teams</div></div>
     </div>
   </div>
 </header>
@@ -169,6 +166,14 @@
 
 <!-- ────────── DASHBOARD ────────── -->
 <div class="tab-content active" id="tab-dashboard">
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6" id="hero-stats">
+    <div class="card p-3 text-center"><div class="stat-value" id="stat-events">-</div><div class="stat-label">Events</div></div>
+    <div class="card p-3 text-center"><div class="stat-value" id="stat-sessions">-</div><div class="stat-label">Sessions</div></div>
+    <div class="card p-3 text-center"><div class="stat-value" id="stat-results">-</div><div class="stat-label">Results</div></div>
+    <div class="card p-3 text-center"><div class="stat-value" id="stat-riders">-</div><div class="stat-label">Riders</div></div>
+    <div class="card p-3 text-center"><div class="stat-value" id="stat-teams">-</div><div class="stat-label">Teams</div></div>
+  </div>
+
   <div class="mb-6">
     <h2 class="text-xl font-bold">🏆 Championship Top 3</h2>
     <div class="accent-line mt-2"></div>
@@ -183,9 +188,10 @@
     <span class="sub-tab active" onclick="switchStandingsChart(this, 'riders')">🏍️ Riders</span>
     <span class="sub-tab" onclick="switchStandingsChart(this, 'constructors')">🏭 Constructors</span>
   </div>
-  <div class="card p-4 md:p-6">
+  <div class="card p-4 md:p-6 mb-4">
     <canvas id="standingsChart" height="350"></canvas>
   </div>
+  <div class="card overflow-x-auto" id="dashboard-standings-table"></div>
 
   <div class="mb-6 mt-10">
     <h2 class="text-xl font-bold">🏁 Recent Results</h2>
@@ -439,7 +445,7 @@ async function init() {
 function onCategoryChange() {
   currentCategory = document.getElementById('cat-filter').value;
   const active = document.querySelector('.tab-content.active');
-  if (active) { const id = active.id.replace('tab-', ''); if (id === 'dashboard') loadAll(); }
+  if (active) { const id = active.id.replace('tab-', ''); if (id === 'dashboard') { loadAll(); } }
 }
 
 // ── Podium + Stats ──
@@ -485,10 +491,10 @@ async function loadStandingsChart() {
       : await api(`/standings/constructors?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!data || data.length === 0) return;
 
-    const top = data.slice(0, 12);
+    const top = data.slice(0, 20);
     const labels = type === 'riders' ? top.map(r => r.rider_name.split(' ').pop()) : top.map(r => r.constructor_name);
     const points = top.map(r => r.points);
-    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72'];
+    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72','#e17055','#0984e3','#00cec9','#fdcb6e','#e84393','#00b894','#6c5ce7','#636e72'];
 
     if (state.standingsChart) state.standingsChart.destroy();
     const ctx = document.getElementById('standingsChart').getContext('2d');
@@ -512,6 +518,29 @@ async function loadStandingsChart() {
         }
       }
     });
+  } catch (err) { console.error(err); }
+}
+
+// ── Dashboard Standings Table (full list) ──
+async function loadDashboardStandings() {
+  try {
+    const cat = document.getElementById('cat-filter').value;
+    const container = document.getElementById('dashboard-standings-table');
+    const data = await api(`/standings/riders?year=2026${cat ? `&category=${cat}` : ''}`);
+    if (!data || data.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No standings data</div>'; return; }
+    let html = '<div class="overflow-x-auto"><table><tr><th>Pos</th><th>Rider</th><th style="text-align:right;">Pts</th><th class="hide-mobile">#</th><th class="hide-mobile">Team</th><th class="hide-mobile">Constructor</th></tr>';
+    data.forEach(r => {
+      html += `<tr class="rider-row" onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')">
+        <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
+        <td><strong>${r.rider_name}</strong></td>
+        <td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td>
+        <td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td>
+        <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
+        <td class="hide-mobile"><span class="badge badge-soft">${r.constructor_name || '-'}</span></td>
+      </tr>`;
+    });
+    html += '</table></div>';
+    container.innerHTML = html;
   } catch (err) { console.error(err); }
 }
 
@@ -1252,7 +1281,7 @@ async function loadNews(refresh = false) {
 
 // ── Load All ──
 async function loadAll() {
-  await Promise.all([loadPodium(), loadRecentResults(), loadStandingsChart()]);
+  await Promise.all([loadPodium(), loadRecentResults(), loadStandingsChart(), loadDashboardStandings()]);
   const active = document.querySelector('.tab-content.active');
   if (active) { const id = active.id.replace('tab-', ''); if (id === 'standings') loadStandings(); if (id === 'races') loadRaces(); if (id === 'teams') loadTeams(); if (id === 'news') loadNews(); }
 }
