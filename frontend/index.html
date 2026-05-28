@@ -33,6 +33,9 @@
   .nav-link.active { color: #fff; background: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
   .light .nav-link.active { color: #fff; }
   table { width: 100%; border-collapse: collapse; }
+  table.sticky-col { border-collapse: separate; border-spacing: 0; }
+  table.sticky-col th:first-child,
+  table.sticky-col td:first-child { position: sticky; left: 0; z-index: 1; background: var(--bg-card); }
   th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--text-secondary); border-bottom: 2px solid var(--accent); font-weight: 700; }
   td { padding: 10px 14px; border-bottom: 1px solid var(--table-border); font-size: 13px; transition: background .15s; cursor: default; }
   tr:hover td { background: var(--hover-bg); }
@@ -681,11 +684,11 @@ async function loadBreakdown() {
     const data = await api(`/championship/breakdown?year=2026${cat ? `&category=${cat}` : ''}&top_n=10`);
     if (!data.riders || data.riders.length === 0 || !data.races || data.races.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No breakdown data</div>'; return; }
     // Build header: Rider | R1 | R2 | ... | Total
-    let html = '<div class="overflow-x-auto"><table><tr><th style="position:sticky;left:0;background:var(--bg-card);z-index:1;">Rider</th>';
+    let html = '<div class="overflow-x-auto"><table class="sticky-col"><tr><th>Rider</th>';
     data.races.forEach(r => { html += `<th style="text-align:center;min-width:40px;">R${r.round}</th>`; });
     html += '<th style="text-align:right;">Total</th></tr>';
     data.riders.forEach(rider => {
-      html += `<tr><td style="position:sticky;left:0;background:var(--bg-card);z-index:1;"><strong>${rider.rider_name}</strong></td>`;
+      html += `<tr><td><strong>${rider.rider_name}</strong></td>`;
       data.races.forEach(r => {
         const res = rider.results[r.round] || {};
         const pts = res.points || 0;
@@ -733,7 +736,7 @@ async function loadRaces() {
           const sessLabel = sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint';
           return `<details class="mb-2">
             <summary class="cursor-pointer text-sm font-bold px-2 py-1 rounded" style="color:var(--accent);">${sessLabel} <span style="color:var(--text-secondary);font-weight:400;">— tap to expand</span></summary>
-            <div class="mt-2 results-${sess.id}"><div class="text-xs py-4 text-center" style="color:var(--text-muted);">Loading...</div></div>
+            <div class="overflow-x-auto mt-2 results-${sess.id}"><div class="text-xs py-4 text-center" style="color:var(--text-muted);">Loading...</div></div>
           </details>`;
         }).join('')}</div>` : ''}
         ${ev.circuit_name ? `<div class="px-4 py-2 text-xs flex flex-wrap gap-4" style="background:var(--bg-primary);border-top:1px solid var(--border-color);color:var(--text-secondary);">
@@ -977,7 +980,7 @@ async function loadRiderProgress() {
     html += `<div style="width:100%;overflow:hidden;"><canvas id="${chartId}" height="${isMobile ? 160 : 200}" style="width:100%;max-width:100%;"></canvas></div>`;
     
     // Table
-    html += '<table><tr><th>Round</th><th>Session</th><th>Pos</th><th>Points</th><th class="hide-mobile">Best Lap</th><th class="hide-mobile">Top Speed</th></tr>';
+    html += '<div class="overflow-x-auto"><table><tr><th>Round</th><th>Session</th><th>Pos</th><th>Points</th><th class="hide-mobile">Best Lap</th><th class="hide-mobile">Top Speed</th></tr>';
     data.races.forEach(r => {
       html += `<tr>
         <td>R${r.round}</td>
