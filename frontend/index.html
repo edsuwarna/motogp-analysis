@@ -189,7 +189,9 @@
     <span class="sub-tab" onclick="switchStandingsChart(this, 'constructors')">🏭 Constructors</span>
   </div>
   <div class="card p-4 md:p-6 mb-4">
-    <canvas id="standingsChart" height="350" style="height:auto;min-height:300px;"></canvas>
+    <div style="overflow-y:auto;max-height:520px;">
+      <canvas id="standingsChart" height="350"></canvas>
+    </div>
   </div>
   <div class="card overflow-x-auto" id="dashboard-standings-table"></div>
 
@@ -410,11 +412,20 @@ function toggleTheme() {
 document.documentElement.classList.add('dark');
 
 // ── Tab Navigation ──
+function scrollNavToTab(tab) {
+  const nav = document.getElementById('nav-tabs');
+  const link = document.querySelector(`[data-tab="${tab}"]`);
+  if (nav && link) {
+    link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+}
+
 function navigateToTab(tab) {
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
+  scrollNavToTab(tab);
   if (tab === 'standings') loadStandings();
   if (tab === 'races') loadRaces();
   if (tab === 'progression') { loadProgression(); loadTeammateBattle(); }
@@ -518,14 +529,14 @@ async function loadStandingsChart() {
       : await api(`/standings/constructors?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!data || data.length === 0) return;
 
-    const labels = type === 'riders' ? data.map(r => r.rider_name.split(' ').pop()) : data.map(r => r.constructor_name);
+    const labels = type === 'riders' ? data.map(r => r.rider_name) : data.map(r => r.constructor_name);
     const points = data.map(r => r.points);
     const palette = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72','#e17055','#0984e3','#00cec9','#fdcb6e','#e84393','#00b894','#6c5ce7','#636e72'];
     const colors = data.map((_, i) => palette[i % palette.length]);
 
     if (state.standingsChart) state.standingsChart.destroy();
     const canvas = document.getElementById('standingsChart');
-    canvas.height = Math.max(300, data.length * 12);
+    canvas.height = Math.max(350, data.length * 28);
     const ctx = canvas.getContext('2d');
     state.standingsChart = new Chart(ctx, {
       type: 'bar',
@@ -540,6 +551,7 @@ async function loadStandingsChart() {
       },
       options: {
         indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        animation: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.raw} pts` } } },
         scales: {
           x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999' } },
@@ -897,6 +909,7 @@ async function showRiderProgress(riderId, riderName) {
   // Switch to stats tab and select rider
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.querySelector('[data-tab="stats"]').classList.add('active');
+  scrollNavToTab('stats');
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-stats').classList.add('active');
   // Ensure rider list is loaded before selecting
