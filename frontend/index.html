@@ -778,7 +778,7 @@ async function loadTeams() {
               ${t.rider_count > 0 ? `<span class="text-xs" style="color:var(--text-secondary);">${t.rider_count} rider(s)</span>` : ''}
             </div>
             ${t.riders && t.riders.length > 0 ? `<div class="mt-2">
-              ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${g.teams[0].riders && g.teams[0].riders.length > 1 ? 'rider-row' : ''}" ${g.teams[0].riders && g.teams[0].riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"` : ''}>
+              ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${t.riders.length > 1 ? 'rider-row' : ''}" ${t.riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"` : ''}>
                 <span><strong>${r.rider_name}</strong> #${r.rider_number || '-'}</span>
                 <span style="color:var(--accent);font-weight:700;">${r.points} pts</span>
               </div>`).join('')}
@@ -1023,8 +1023,6 @@ async function loadTeammateBattle() {
           <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${b.color};"></span>
           <h3 class="font-bold">${b.team_name || b.constructor_name}</h3>
           <span class="text-xs" style="color:var(--text-secondary);">${b.constructor_name}</span>
-        </div>
-        ${b.riders.map(r => `
         </div>
         ${b.riders.map(r => `
           <div class="flex items-center justify-between text-sm py-1 border-b" style="border-color:var(--border-color);">
