@@ -189,7 +189,7 @@
     <span class="sub-tab" onclick="switchStandingsChart(this, 'constructors')">🏭 Constructors</span>
   </div>
   <div class="card p-4 md:p-6 mb-4">
-    <canvas id="standingsChart" height="350"></canvas>
+    <canvas id="standingsChart" height="350" style="height:auto;min-height:300px;"></canvas>
   </div>
   <div class="card overflow-x-auto" id="dashboard-standings-table"></div>
 
@@ -409,12 +409,10 @@ function toggleTheme() {
 }
 document.documentElement.classList.add('dark');
 
-// ── Nav ──
-document.getElementById('nav-tabs').addEventListener('click', e => {
-  const link = e.target.closest('.nav-link'); if (!link) return;
-  const tab = link.dataset.tab;
+// ── Tab Navigation ──
+function navigateToTab(tab) {
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  link.classList.add('active');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
   if (tab === 'standings') loadStandings();
@@ -423,7 +421,36 @@ document.getElementById('nav-tabs').addEventListener('click', e => {
   if (tab === 'teams') loadTeams();
   if (tab === 'stats') { loadSeasonStats(); loadRiderList(); fillCompareLists(); loadRiderFormList(); loadSeasonStatsTable(); }
   if (tab === 'news') loadNews();
+}
+
+document.getElementById('nav-tabs').addEventListener('click', e => {
+  const link = e.target.closest('.nav-link'); if (!link) return;
+  const tab = link.dataset.tab;
+  history.pushState({ tab }, '', `#${tab}`);
+  navigateToTab(tab);
 });
+
+// Handle browser back/forward
+window.addEventListener('popstate', e => {
+  if (e.state && e.state.tab) {
+    navigateToTab(e.state.tab);
+  } else {
+    // Fallback: read from URL hash
+    const tab = location.hash.replace('#', '') || 'dashboard';
+    navigateToTab(tab);
+  }
+});
+
+// If URL has a hash on load, navigate to that tab
+if (location.hash) {
+  const tab = location.hash.replace('#', '');
+  // Wait for init() to finish, then navigate
+  const origInit = init;
+  init = async function() {
+    await origInit();
+    navigateToTab(tab);
+  };
+}
 
 // ── API ──
 async function api(path) { const res = await fetch(`${API}/api${path}`); if (!res.ok) throw new Error(`API ${res.status}: ${path}`); return res.json(); }
@@ -491,13 +518,15 @@ async function loadStandingsChart() {
       : await api(`/standings/constructors?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!data || data.length === 0) return;
 
-    const top = data.slice(0, 20);
-    const labels = type === 'riders' ? top.map(r => r.rider_name.split(' ').pop()) : top.map(r => r.constructor_name);
-    const points = top.map(r => r.points);
-    const colors = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72','#e17055','#0984e3','#00cec9','#fdcb6e','#e84393','#00b894','#6c5ce7','#636e72'];
+    const labels = type === 'riders' ? data.map(r => r.rider_name.split(' ').pop()) : data.map(r => r.constructor_name);
+    const points = data.map(r => r.points);
+    const palette = ['#e30613','#ff6b35','#d4a800','#00a86b','#1a5276','#8e44ad','#e84393','#00b894','#6c5ce7','#fd79a8','#2d3436','#636e72','#e17055','#0984e3','#00cec9','#fdcb6e','#e84393','#00b894','#6c5ce7','#636e72'];
+    const colors = data.map((_, i) => palette[i % palette.length]);
 
     if (state.standingsChart) state.standingsChart.destroy();
-    const ctx = document.getElementById('standingsChart').getContext('2d');
+    const canvas = document.getElementById('standingsChart');
+    canvas.height = Math.max(300, data.length * 12);
+    const ctx = canvas.getContext('2d');
     state.standingsChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -505,7 +534,7 @@ async function loadStandingsChart() {
         datasets: [{
           label: type === 'riders' ? 'Points' : 'Constructor Points',
           data: points,
-          backgroundColor: colors.slice(0, top.length),
+          backgroundColor: colors,
           borderRadius: 4, borderSkipped: false,
         }]
       },
@@ -514,7 +543,7 @@ async function loadStandingsChart() {
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.raw} pts` } } },
         scales: {
           x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999' } },
-          y: { grid: { display: false }, ticks: { color: '#999', font: { size: 11 } } }
+          y: { grid: { display: false }, ticks: { color: '#999', font: { size: data.length > 30 ? 9 : data.length > 20 ? 10 : 11 } } }
         }
       }
     });
@@ -862,14 +891,17 @@ async function loadRiderList() {
   } catch (err) { console.error(err); }
 }
 
-function showRiderProgress(riderId, riderName) {
+async function showRiderProgress(riderId, riderName) {
+  // Push state for back navigation
+  history.pushState({ tab: 'stats', riderId }, '', '#stats');
   // Switch to stats tab and select rider
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.querySelector('[data-tab="stats"]').classList.add('active');
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-stats').classList.add('active');
+  // Ensure rider list is loaded before selecting
+  await loadRiderList();
   const sel = document.getElementById('rider-select');
-  // Find and select the rider
   for (const opt of sel.options) { if (opt.value === riderId) { sel.value = riderId; break; } }
   loadRiderProgress();
 }
