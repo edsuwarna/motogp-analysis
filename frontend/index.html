@@ -343,7 +343,7 @@
     <div class="accent-line mt-2"></div>
     <p class="text-xs mt-2" style="color:var(--text-secondary);">Aggregate stats across all race & sprint sessions</p>
   </div>
-  <div class="card overflow-x-auto" id="season-stats-table"></div>
+  <div class="card overflow-x-auto" id="season-stats-table" style="max-height:80vh;overflow-y:auto;"></div>
 </div>
 
 <!-- ────────── NEWS ────────── -->
@@ -965,7 +965,8 @@ async function loadRiderProgress() {
     
     // Chart
     const chartId = 'riderChart_' + Math.random().toString(36).substr(2, 9);
-    html += `<canvas id="${chartId}" height="200" class="mb-4"></canvas>`;
+    const isMobile = window.innerWidth < 768;
+    html += `<div style="width:100%;overflow:hidden;"><canvas id="${chartId}" height="${isMobile ? 160 : 200}" style="width:100%;max-width:100%;"></canvas></div>`;
     
     // Table
     html += '<table><tr><th>Round</th><th>Session</th><th>Pos</th><th>Points</th><th class="hide-mobile">Best Lap</th><th class="hide-mobile">Top Speed</th></tr>';
@@ -1000,11 +1001,12 @@ async function loadRiderProgress() {
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'top', labels: { color: '#999', font: { size: 11 } } } },
+        animation: false,
+        plugins: { legend: { position: 'top', labels: { color: '#999', font: { size: window.innerWidth < 768 ? 9 : 11 } } } },
         scales: {
-          y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999' }, title: { display: true, text: 'Points', color: '#999' } },
-          y1: { reverse: true, position: 'right', grid: { display: false }, ticks: { color: '#666', stepSize: 2 }, title: { display: true, text: 'Position', color: '#666' } },
-          x: { grid: { display: false }, ticks: { color: '#999' } }
+          y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#999', font: { size: window.innerWidth < 768 ? 9 : 11 } }, title: { display: true, text: 'Points', color: '#999', font: { size: window.innerWidth < 768 ? 9 : 11 } } },
+          y1: { reverse: true, position: 'right', grid: { display: false }, ticks: { color: '#666', stepSize: 2, font: { size: window.innerWidth < 768 ? 8 : 10 } }, title: { display: true, text: 'Position', color: '#666', font: { size: window.innerWidth < 768 ? 9 : 11 } } },
+          x: { grid: { display: false }, ticks: { color: '#999', font: { size: window.innerWidth < 768 ? 8 : 10 } } }
         }
       }
     });
@@ -1300,7 +1302,34 @@ async function loadRiderForm() {
 }
 
 
-// ── Rider Season Stats Table ──
+// ── Rider Season Stats Table (paginated — top 20 + show all) ──
+
+let _fullStatsData = null;
+
+function renderStatsTable(riders, showAll = false) {
+  const container = document.getElementById('season-stats-table');
+  if (!riders || riders.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary);">No stats data</div>'; return; }
+  const limit = showAll ? riders.length : 20;
+  const display = riders.slice(0, limit);
+  let html = '<table><tr><th>Rider</th><th style="text-align:right;">Pts</th><th class="hide-mobile" style="text-align:right;">Races</th><th class="hide-mobile" style="text-align:right;">Avg Pos</th><th style="text-align:right;">🏆</th><th style="text-align:right;">🥇</th><th class="hide-mobile" style="text-align:right;">Top5</th><th class="hide-mobile" style="text-align:right;">💥 DNF</th></tr>';
+  display.forEach(r => {
+    html += `<tr>
+      <td><strong>${r.rider_name}</strong> ${r.flag ? `<span class="flag">${r.flag}</span>` : ''} <span class="hide-mobile" style="color:var(--text-muted);font-size:11px;">${r.constructor_name || ''}</span></td>
+      <td style="text-align:right;font-weight:700;color:var(--accent);font-size:15px;">${r.points}</td>
+      <td class="hide-mobile" style="text-align:right;">${r.races}</td>
+      <td class="hide-mobile" style="text-align:right;">${r.avg_position || '-'}</td>
+      <td style="text-align:right;font-weight:700;color:var(--gold);">${r.wins || '-'}</td>
+      <td style="text-align:right;font-weight:700;color:var(--bronze);">${r.podiums || '-'}</td>
+      <td class="hide-mobile" style="text-align:right;">${r.top5 || '-'}</td>
+      <td class="hide-mobile" style="text-align:right;color:var(--text-muted);">${r.dnf || '-'}</td>
+    </tr>`;
+  });
+  html += '</table>';
+  if (!showAll && riders.length > 20) {
+    html += `<div class="text-center py-3"><button onclick="renderStatsTable(_fullStatsData, true)" class="px-4 py-2 rounded-lg text-sm font-bold text-white" style="background:var(--accent);border:none;cursor:pointer;">Show All ${riders.length} Riders ↓</button></div>`;
+  }
+  container.innerHTML = html;
+}
 
 async function loadSeasonStatsTable() {
   try {
@@ -1308,24 +1337,11 @@ async function loadSeasonStatsTable() {
     const container = document.getElementById('season-stats-table');
     if (!container) return;
     container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-muted);">Loading...</div>';
-    // Use rider stats endpoint (no category filter yet — backend handles it)
     const data = await api(`/riders/stats?year=2026${cat ? `&category=${cat}` : ''}`);
     if (!data.riders || data.riders.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary);">No stats data</div>'; return; }
-    let html = '<table><tr><th>Rider</th><th style="text-align:right;">Pts</th><th style="text-align:right;">Races</th><th style="text-align:right;">Avg Pos</th><th style="text-align:right;">🏆</th><th style="text-align:right;">🥇</th><th style="text-align:right;">Top5</th><th style="text-align:right;">💥 DNF</th></tr>';
-    data.riders.forEach(r => {
-      html += `<tr>
-        <td><strong>${r.rider_name}</strong> ${r.flag ? `<span class="flag">${r.flag}</span>` : ''} <span style="color:var(--text-muted);font-size:11px;">${r.constructor_name || ''}</span></td>
-        <td style="text-align:right;font-weight:700;color:var(--accent);font-size:15px;">${r.points}</td>
-        <td style="text-align:right;">${r.races}</td>
-        <td style="text-align:right;">${r.avg_position || '-'}</td>
-        <td style="text-align:right;font-weight:700;color:var(--gold);">${r.wins || '-'}</td>
-        <td style="text-align:right;font-weight:700;color:var(--bronze);">${r.podiums || '-'}</td>
-        <td style="text-align:right;">${r.top5 || '-'}</td>
-        <td style="text-align:right;color:var(--text-muted);">${r.dnf || '-'}</td>
-      </tr>`;
-    });
-    html += '</table>';
-    container.innerHTML = html;
+    _fullStatsData = data.riders;
+    // Defer render with requestAnimationFrame so UI doesn't freeze
+    requestAnimationFrame(() => renderStatsTable(_fullStatsData, false));
   } catch (err) { console.error(err); container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary);">Error loading stats</div>'; }
 }
 
