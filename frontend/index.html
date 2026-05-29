@@ -35,7 +35,8 @@
   table { width: 100%; border-collapse: collapse; }
   table.sticky-col { border-collapse: separate; border-spacing: 0; }
   table.sticky-col th:first-child,
-  table.sticky-col td:first-child { position: sticky; left: 0; z-index: 1; background: var(--bg-card); }
+  table.sticky-col td:first-child { position: sticky; left: 0; z-index: 2; background: var(--bg-card); }
+  table.sticky-col th:first-child { z-index: 3; }
   th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--text-secondary); border-bottom: 2px solid var(--accent); font-weight: 700; }
   td { padding: 10px 14px; border-bottom: 1px solid var(--table-border); font-size: 13px; transition: background .15s; cursor: default; }
   tr:hover td { background: var(--hover-bg); }
@@ -75,6 +76,17 @@
   .stat-card { text-align: center; padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color); }
   .stat-card .val { font-size: 22px; font-weight: 800; color: var(--accent); }
   .stat-card .lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+  /* Constructor colored badge */
+  .c-badge { display:inline-block; padding:2px 10px; border-radius:10px; font-size:11px; font-weight:700; letter-spacing:.3px; color:#fff; }
+  /* Top 3 row highlighting */
+  .row-gold { background: rgba(212,168,0,.08); } .row-silver { background: rgba(168,168,168,.08); } .row-bronze { background: rgba(205,127,50,.08); }
+  html.light .row-gold { background: rgba(212,168,0,.12); } html.light .row-silver { background: rgba(168,168,168,.12); } html.light .row-bronze { background: rgba(205,127,50,.12); }
+  .row-highlight td { transition: background 0s; }
+  /* Team name with fixed right spacing */
+  .team-cell { display:flex; align-items:center; gap:10px; }
+  .team-cell .team-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+  .team-cell .c-badge { flex-shrink:0; }
+  .light .c-badge { box-shadow:0 1px 2px rgba(0,0,0,.1); }
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: var(--bg-primary); }
   ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
@@ -90,7 +102,6 @@
   .battle-bar { height: 24px; border-radius: 12px; transition: width .5s ease; }
   .back-btn { cursor: pointer; padding: 6px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); border: 1px solid var(--accent); transition: all .2s; display: inline-block; background: transparent; }
   .back-btn:hover { background: var(--accent); color: #fff; }
-  .hide-mobile { display: inline; }
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
     .nav-link { padding: 6px 10px; font-size: 11px; }
@@ -404,6 +415,20 @@
 
 <script>
 const API = 'https://motogp-api.edsuwarna.id';
+const CONSTRUCTOR_COLORS = {
+  "Aprilia": "#d52b2b", "Ducati": "#cc0000", "Yamaha": "#0055a5",
+  "Honda": "#a5a5a5", "KTM": "#ff6600", "Kalex": "#0055a5",
+  "Boscoscuro": "#8b0000", "Forward": "#00a86b", "MV Agusta": "#8b4513",
+};
+// Team-specific color overrides (API sometimes returns generic constructor color)
+const TEAM_COLORS = {
+  "Aprilia Racing":"#5f259f","Pertamina Enduro VR46 Racing Team":"#e5b80b",
+  "Ducati Lenovo Team":"#ad0000","BK8 Gresini Racing MotoGP":"#9baee4",
+  "Red Bull KTM Factory Racing":"#ff7e27","Red Bull KTM Tech3":"#e85200",
+  "Trackhouse MotoGP Team":"#1a1a2e","Monster Energy Yamaha MotoGP Team":"#0a2d82",
+  "Honda HRC Castrol":"#e50000","Castrol Honda LCR":"#c02e2e","Pro Honda LCR":"#a5a5a5",
+};
+function htmlEscape(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 let state = { categories: [], events: [], standingsChart: null, curChart: 'riders' };
 let currentCategory = '';
 
@@ -536,6 +561,7 @@ async function loadPodium() {
         <div class="text-lg font-bold">${r.rider_name}</div>
         <div class="text-sm" style="color:var(--text-secondary);">${r.constructor_name}</div>
         <div class="text-2xl font-black moto-red mt-2">${r.points} <span style="font-size:12px;color:var(--text-secondary);">pts</span></div>
+        ${r.color ? `<div style="margin-top:8px;"><span class="c-badge" style="background:${r.color};font-size:10px;">${r.constructor_name}</span></div>` : ''}
       </div>
     `).join('');
   } catch (err) { console.error(err); }
@@ -604,13 +630,15 @@ async function loadDashboardStandings() {
     if (!data || data.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No standings data</div>'; return; }
     let html = '<div class="overflow-x-auto"><table><tr><th>Pos</th><th>Rider</th><th style="text-align:right;">Pts</th><th class="hide-mobile">#</th><th class="hide-mobile">Team</th><th class="hide-mobile">Constructor</th></tr>';
     data.forEach(r => {
-      html += `<tr class="rider-row" onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')">
+      const tc = r.color || TEAM_COLORS[r.team_name] || CONSTRUCTOR_COLORS[r.constructor_name] || '#666';
+      const rowClass = r.position === 1 ? 'row-gold' : r.position === 2 ? 'row-silver' : r.position === 3 ? 'row-bronze' : '';
+      html += `<tr class="rider-row ${rowClass}" onclick="showRiderProgress('${r.rider_id}')">
         <td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
         <td><strong>${r.rider_name}</strong></td>
         <td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td>
         <td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td>
-        <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
-        <td class="hide-mobile"><span class="badge badge-soft">${r.constructor_name || '-'}</span></td>
+        <td class="hide-mobile"><span class="team-cell"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${tc};flex-shrink:0;"></span><span class="team-name" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</span></span></td>
+        <td class="hide-mobile"><span class="c-badge" style="background:${tc};">${r.constructor_name || '-'}</span></td>
       </tr>`;
     });
     html += '</table></div>';
@@ -637,7 +665,7 @@ async function loadRecentResults() {
         html += `<div class="text-xs mb-1" style="color:var(--text-secondary);">${sess.type === 'RAC' ? '🏁 Race' : '⚡ Sprint'}</div>`;
         html += '<table><tr><th>Pos</th><th>Rider</th><th class="hide-mobile">Team</th><th>Time</th><th class="hide-mobile">Best Lap</th></tr>';
         results.slice(0, 5).forEach(r => {
-          html += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : `#${r.position}`}</td>
+          html += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td>
             <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
             <td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>
             <td style="font-family:monospace;font-size:12px;">${r.total_time || r.gap_first || '-'}</td>
@@ -664,7 +692,7 @@ async function loadStandings() {
     let html = '<table>';
     if (type === 'riders') {
       html += `<tr><th>Pos</th><th>Rider</th><th style="text-align:right;">Pts</th><th class="hide-mobile">#</th><th class="hide-mobile">Team</th><th class="hide-mobile">Constructor</th></tr>`;
-      data.forEach(r => { html += `<tr class="rider-row" onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td><td><strong>${r.rider_name}</strong></td><td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td><td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td><td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td><td class="hide-mobile"><span class="badge badge-soft">${r.constructor_name || '-'}</span></td></tr>`; });
+      data.forEach(r => { const tc = r.color || TEAM_COLORS[r.team_name] || CONSTRUCTOR_COLORS[r.constructor_name] || '#666'; const rowClass = r.position === 1 ? 'row-gold' : r.position === 2 ? 'row-silver' : r.position === 3 ? 'row-bronze' : ''; html += `<tr class="rider-row ${rowClass}" onclick="showRiderProgress('${r.rider_id}')"><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td><td><strong>${r.rider_name}</strong></td><td style="text-align:right;font-weight:700;font-size:15px;color:var(--accent);">${r.points}</td><td class="hide-mobile" style="color:var(--text-muted)">#${r.rider_number || '-'}</td><td class="hide-mobile"><span class="team-cell"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${tc};flex-shrink:0;"></span><span class="team-name" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</span></span></td><td class="hide-mobile"><span class="c-badge" style="background:${tc};">${r.constructor_name || '-'}</span></td></tr>`; });
     } else {
       html += `<tr><th>Pos</th><th>Constructor</th><th style="text-align:right;">Points</th></tr>`;
       data.forEach(r => { html += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : r.position}</td><td><strong>${r.constructor_name}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent);">${r.points}</td></tr>`; });
@@ -683,13 +711,18 @@ async function loadBreakdown() {
     const container = document.getElementById('breakdown-table');
     const data = await api(`/championship/breakdown?year=2026${cat ? `&category=${cat}` : ''}&top_n=10`);
     if (!data.riders || data.riders.length === 0 || !data.races || data.races.length === 0) { container.innerHTML = '<div class="p-6 text-center" style="color:var(--text-secondary)">No breakdown data</div>'; return; }
+    // Only show rounds that have data (at least one rider scored points)
+    const activeRounds = data.races.filter(r =>
+      data.riders.some(rider => (rider.results[r.round]?.points || 0) > 0)
+    );
+    const displayRounds = activeRounds.length > 0 ? activeRounds : data.races;
     // Build header: Rider | R1 | R2 | ... | Total
-    let html = '<div class="overflow-x-auto"><table class="sticky-col"><tr><th>Rider</th>';
-    data.races.forEach(r => { html += `<th style="text-align:center;min-width:40px;">R${r.round}</th>`; });
+    let html = '<div class="overflow-x-auto"><table class="sticky-col" style="min-width:600px;"><tr><th style="min-width:140px;white-space:nowrap;">Rider</th>';
+    displayRounds.forEach(r => { html += `<th style="text-align:center;min-width:40px;">R${r.round}</th>`; });
     html += '<th style="text-align:right;">Total</th></tr>';
     data.riders.forEach(rider => {
       html += `<tr><td><strong>${rider.rider_name}</strong></td>`;
-      data.races.forEach(r => {
+      displayRounds.forEach(r => {
         const res = rider.results[r.round] || {};
         const pts = res.points || 0;
         const pos = res.position;
@@ -781,7 +814,7 @@ async function loadRaces() {
           (hasTopSpeed ? '<th class="hide-mobile">Top Speed</th>' : '') +
           '</tr>';
         results.forEach(r => {
-          tbl += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position || '-')}</td>
+          tbl += `<tr><td class="${r.position <= 3 ? `pos-${r.position}` : ''}">${r.position <= 3 ? ['🥇','🥈','🥉'][r.position-1] : (r.position ?? '-')}</td>
             <td><strong>${r.rider_name}</strong> <span style="color:var(--text-muted);font-size:11px;">#${r.rider_number}</span></td>
             ${hasCountry ? `<td class="hide-mobile">${r.rider_country || '-'}</td>` : ''}
             ${hasTeam ? `<td class="hide-mobile" style="color:var(--text-secondary);font-size:12px;">${r.team_name || '-'}</td>` : ''}
@@ -883,7 +916,7 @@ async function loadTeams() {
               ${t.rider_count > 0 ? `<span class="text-xs" style="color:var(--text-secondary);">${t.rider_count} rider(s)</span>` : ''}
             </div>
             ${t.riders && t.riders.length > 0 ? `<div class="mt-2">
-              ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${t.riders.length > 1 ? 'rider-row' : ''}" ${t.riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}','${r.rider_name.replace(/'/g,"\\'")}')"` : ''}>
+              ${t.riders.map(r => `<div class="flex items-center justify-between text-xs py-1 ${t.riders.length > 1 ? 'rider-row' : ''}" ${t.riders.length > 1 ? `onclick="showRiderProgress('${r.rider_id}')"` : ''}>
                 <span><strong>${r.rider_name}</strong> #${r.rider_number || '-'}</span>
                 <span style="color:var(--accent);font-weight:700;">${r.points} pts</span>
               </div>`).join('')}
@@ -944,7 +977,7 @@ async function loadRiderList() {
   } catch (err) { console.error(err); }
 }
 
-async function showRiderProgress(riderId, riderName) {
+async function showRiderProgress(riderId) {
   // Push state for back navigation
   history.pushState({ tab: 'stats', riderId }, '', '#stats');
   // Switch to stats tab and select rider
@@ -998,7 +1031,7 @@ async function loadRiderProgress() {
     const ctx = document.getElementById(chartId).getContext('2d');
     const labels = data.races.map(r => `R${r.round}`);
     const cumulativePoints = data.races.map(r => r.total_points);
-    const positions = data.races.map(r => r.position || 20);
+    const positions = data.races.map(r => r.position ?? 20);
     const maxPts = Math.max(...cumulativePoints);
     
     new Chart(ctx, {
@@ -1146,7 +1179,7 @@ async function loadTeammateBattle() {
         ${b.riders.map(r => `
           <div class="flex items-center justify-between text-sm py-1 border-b" style="border-color:var(--border-color);">
             <span><strong>${r.rider_name}</strong> #${r.rider_number || ''}</span>
-            <span style="color:var(--text-secondary);font-size:12px;">P${r.position || '-'} · ${r.points} pts</span>
+            <span style="color:var(--text-secondary);font-size:12px;">P${r.position ?? '-'} · ${r.points} pts</span>
           </div>
         `).join('')}
         ${h2h.rider_a ? `
@@ -1366,13 +1399,13 @@ async function loadNews(refresh = false) {
     const articles = data.articles || [];
     if (articles.length === 0) { container.innerHTML = '<div class="col-span-2 text-center py-8" style="color:var(--text-secondary)">No news articles right now</div>'; return; }
     container.innerHTML = articles.slice(0, 20).map(a => `
-      <a href="${a.link}" target="_blank" rel="noopener" class="news-card card p-4 block" style="text-decoration:none;color:inherit;">
+      <a href="${htmlEscape(a.link)}" target="_blank" rel="noopener" class="news-card card p-4 block" style="text-decoration:none;color:inherit;">
         <div class="flex items-start gap-3">
-          ${a.thumbnail ? `<img src="${a.thumbnail}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" loading="lazy" onerror="this.style.display='none'">` : ''}
+          ${a.thumbnail ? `<img src="${htmlEscape(a.thumbnail)}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" loading="lazy" onerror="this.style.display='none'">` : ''}
           <div class="flex-1 min-w-0">
-            <div class="text-xs mb-1"><span class="badge badge-soft">${a.source_icon} ${a.source}</span></div>
-            <div class="font-bold text-sm leading-snug mb-1">${a.title}</div>
-            <div class="text-xs" style="color:var(--text-secondary);">${(a.description || '').substring(0, 150)}${(a.description || '').length > 150 ? '...' : ''}</div>
+            <div class="text-xs mb-1"><span class="badge badge-soft">${htmlEscape(a.source_icon || '')} ${htmlEscape(a.source)}</span></div>
+            <div class="font-bold text-sm leading-snug mb-1">${htmlEscape(a.title)}</div>
+            <div class="text-xs" style="color:var(--text-secondary);">${htmlEscape((a.description || '').substring(0, 150))}${(a.description || '').length > 150 ? '...' : ''}</div>
             <div class="text-xs mt-1" style="color:var(--text-muted);">${a.pub_date ? new Date(a.pub_date).toLocaleDateString() : ''}</div>
           </div>
         </div>
